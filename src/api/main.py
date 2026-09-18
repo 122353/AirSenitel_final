@@ -2,7 +2,7 @@ import asyncio
 from datetime import datetime
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from sse_starlette.sse import EventSourceResponse
+from fastapi.responses import StreamingResponse
 import pandas as pd
 
 from src.api.schemas import CaseActionInput, BRICSModelMetadata
@@ -23,7 +23,15 @@ app = FastAPI(title="AirSentinel API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8501", "http://localhost:8502", "http://localhost:8503"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://localhost:8501",
+        "http://localhost:8502",
+        "http://localhost:8503",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:5173",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -68,7 +76,13 @@ def get_forecasts(area_id: str):
 
 @app.get("/api/v1/cases")
 def get_cases():
-    # In a real app we'd load these from actual history/forecasts
+    from pathlib import Path
+    case_path = Path("data/processed/authority_case_queue.csv")
+    if case_path.exists():
+        df_cases = pd.read_csv(case_path)
+        return df_cases.to_dict(orient="records")
+    
+    # Fallback to generated cases
     df_obs = pd.DataFrame([{"area_name": "Delhi NCR", "pm25": 150.0}])
     df_fc = pd.DataFrame([{"area_name": "Delhi NCR", "predicted_pm25": 100.0, "empirical_interval_high": 120.0}])
     df_loc = load_locality_profile()
@@ -98,13 +112,14 @@ def get_alerts():
 
 @app.get("/api/v1/live-data")
 async def live_data():
+    import json
     async def event_generator():
         while True:
             data = {"timestamp": datetime.utcnow().isoformat() + "Z", "city": "Delhi NCR", "pm25": 150.5 + (datetime.utcnow().second % 10)}
-            yield {"event": "pollutant_update", "data": str(data)}
+            yield f"event: pollutant_update\ndata: {json.dumps(data)}\n\n"
             await asyncio.sleep(5)
     
-    return EventSourceResponse(event_generator())
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
 
 @app.get("/api/v1/brics/models")
 def list_brics_models():

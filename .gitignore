@@ -12,3 +12,6 @@ service-account*.json
 *.key.json
 docs/*_render*/
 docs/*.inspect.ndjson
+dashboard/node_modules/
+dashboard/dist/
+.vercel

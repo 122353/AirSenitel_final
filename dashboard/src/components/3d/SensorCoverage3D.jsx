@@ -2,7 +2,8 @@ import React, { useRef, useMemo, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Html, Sphere, Cylinder } from '@react-three/drei';
 import * as THREE from 'three';
-import { POLLUTANT_COLORS, EFFECTIVE_RANGES } from '../../utils/sensorRange'; // Reusing from constants
+import { EFFECTIVE_RANGES } from '../../utils/sensorRange';
+import { POLLUTANT_COLORS } from '../../utils/pollutantThresholds';
 
 // Delhi base coordinates roughly at center for relative mapping
 const CENTER = { lat: 28.6139, lon: 77.2090 };
