@@ -1,0 +1,12 @@
+rules_version = '2';
+
+// No direct browser/mobile upload or download is enabled by default. A future
+// media-report workflow must define consent, malware scanning, retention,
+// moderation and Auth/App Check rules before this policy is relaxed.
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

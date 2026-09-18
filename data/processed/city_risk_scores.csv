@@ -1,0 +1,9 @@
+city_id,city_name,current_pm25,forecast_trend,city_risk_score,risk_level,sustainability_action
+CITY_001,Delhi NCR,31.6,Decreasing,17.6,Low,Routine monitoring
+CITY_002,Chennai,55.09,Decreasing,30.8,Moderate,Alert sensitive groups
+CITY_003,Mumbai,37.36,Stable,12.5,Low,Routine monitoring
+CITY_004,Bengaluru,54.3,Stable,29.9,Moderate,Alert sensitive groups
+CITY_005,Hyderabad,175.92,Decreasing,68.6,High,"Deploy mist cannons, strict industrial compliance"
+CITY_006,Kolkata,219.88,Decreasing,83.2,Very High,"Halt construction, school closures recommended"
+CITY_007,Lucknow,213.67,Decreasing,84.3,Very High,"Halt construction, school closures recommended"
+CITY_008,Jaipur,75.69,Stable,31.0,Moderate,Alert sensitive groups

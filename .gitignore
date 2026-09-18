@@ -1,0 +1,14 @@
+.venv/
+.venv_backup_*/
+.venv_broken_*/
+node_modules/
+__pycache__/
+.env
+data/raw/
+*.joblib
+data/processed/community_reports.jsonl
+data/processed/case_action_audit.jsonl
+service-account*.json
+*.key.json
+docs/*_render*/
+docs/*.inspect.ndjson

@@ -1,0 +1,2 @@
+station_id,station_name,latitude,longitude,source,operating_status,locality,distance_to_locality_km,inside_approved_boundary,responsible_authority,notes
+,"Najafgarh, Delhi - DPCC",,,CPCB / DPCC,needs_current_verification,Najafgarh,,needs_boundary_validation,Delhi Pollution Control Committee (DPCC),Official CPCB-listed CAAQMS station; coordinates and current operating status still require verification.

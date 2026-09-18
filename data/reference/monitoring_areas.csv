@@ -1,0 +1,13 @@
+area_id,area_name,state,district_or_city,area_type,latitude,longitude
+DEL_MEH,Mehrauli,Delhi,South Delhi,locality,28.5244,77.1855
+DEL_NAJ,Najafgarh,Delhi,South West Delhi,locality,28.6092,76.9798
+DEL_ROH,Rohini,Delhi,North West Delhi,locality,28.7495,77.0565
+DEL_SFE,Safdarjung Enclave,Delhi,South Delhi,locality,28.5602,77.1931
+DEL_CITY,Delhi NCR,Delhi,Delhi,city,28.6139,77.209
+CHEN_CITY,Chennai,Tamil Nadu,Chennai,city,13.0827,80.2707
+MUM_CITY,Mumbai,Maharashtra,Mumbai,city,19.076,72.8777
+BLR_CITY,Bengaluru,Karnataka,Bengaluru Urban,city,12.9716,77.5946
+HYD_CITY,Hyderabad,Telangana,Hyderabad,city,17.385,78.4867
+KOL_CITY,Kolkata,West Bengal,Kolkata,city,22.5726,88.3639
+LKO_CITY,Lucknow,Uttar Pradesh,Lucknow,city,26.8467,80.9462
+JPR_CITY,Jaipur,Rajasthan,Jaipur,city,26.9124,75.7873

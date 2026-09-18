@@ -1,0 +1,37 @@
+[
+  {
+    "nation": "India",
+    "model_id": "IND-NCAP-01",
+    "type": "Gradient Boosting",
+    "accuracy": 0.91,
+    "latency_ms": 45
+  },
+  {
+    "nation": "Brazil",
+    "model_id": "BRA-AMZ-02",
+    "type": "Random Forest",
+    "accuracy": 0.88,
+    "latency_ms": 60
+  },
+  {
+    "nation": "Russia",
+    "model_id": "RUS-SBR-01",
+    "type": "LSTM Neural Net",
+    "accuracy": 0.94,
+    "latency_ms": 120
+  },
+  {
+    "nation": "China",
+    "model_id": "CHN-BEJ-03",
+    "type": "Transformer",
+    "accuracy": 0.96,
+    "latency_ms": 150
+  },
+  {
+    "nation": "South Africa",
+    "model_id": "ZAF-CPT-01",
+    "type": "XGBoost",
+    "accuracy": 0.89,
+    "latency_ms": 50
+  }
+]

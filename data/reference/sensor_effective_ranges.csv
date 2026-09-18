@@ -1,0 +1,7 @@
+pollutant_code,instrument_class,effective_radius_m,confidence_decay_start_m,notes
+pm25,CAAQMS,1500,800,Particulate matter - highly local dispersion
+pm10,CAAQMS,2000,1000,Coarse particles - slightly wider dispersion
+no2,CAAQMS,2000,1200,Traffic corridor pollutant
+o3,CAAQMS,3000,1500,Secondary pollutant - regional formation
+so2,CAAQMS,2000,1000,Point-source industrial pollutant
+co,CAAQMS,1500,800,Ground-level traffic pollutant

@@ -1,0 +1,40 @@
+# Source control and local environments
+.git/
+.github/
+.venv/
+.venv_*/
+node_modules/
+__pycache__/
+*.py[cod]
+
+# Secrets and service-account material
+.env
+.env.*
+!.env.example
+service-account*.json
+*.key.json
+*.pem
+*.p12
+
+# Never package raw inputs, local report/audit logs, or trained local models.
+data/raw/
+data/processed/*.jsonl
+*.joblib
+
+# Local development artefacts
+.pytest_cache/
+.streamlit/
+docx_render_*/
+_docx_render_*/
+docs/*_render*/
+docs/*.inspect.ndjson
+*.docx
+*.pdf
+tests/
+notebooks/
+
+# Cloud deployment scripts and instructions are not needed at runtime.
+deploy/
+firebase.json
+firestore.rules
+storage.rules

@@ -1,0 +1,5 @@
+area_name,area_type,pm25_hourly_rows,pm25_completeness_percent,pm25_reporting_stations,core_pollutant_codes,historical_evaluation_status,historical_evaluation_horizons,baseline_gate,advanced_model_gate,advanced_model_next_step
+Locality DEL_MEH,Locality,6520,87.6,4,"PM2.5, PM10, NO2",Completed,"1h, 3h, 4h",Passed,Failed,A/B Testing
+Locality DEL_NAJ,Locality,8898,99.4,3,"PM2.5, PM10, NO2",Completed,"1h, 3h, 4h",Passed,Failed,A/B Testing
+Locality DEL_ROH,Locality,6763,85.2,2,"PM2.5, PM10, NO2",Completed,"1h, 3h, 4h",Passed,Failed,A/B Testing
+Locality DEL_SFE,Locality,9741,92.4,2,"PM2.5, PM10, NO2",Completed,"1h, 3h, 4h",Passed,Pending,A/B Testing

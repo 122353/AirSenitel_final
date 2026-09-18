@@ -1,0 +1,5 @@
+area_name,reports_total,reports_pending_moderation,reports_last_6h,corroboration_status,automation_limit
+Locality DEL_MEH,64,5,8,Medium,Auto-validated
+Locality DEL_NAJ,177,16,10,Medium,Auto-validated
+Locality DEL_ROH,75,8,5,Low,Auto-validated
+Locality DEL_SFE,62,7,12,Medium,Auto-validated

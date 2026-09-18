@@ -1,0 +1,40 @@
+# Keep Cloud Build source free of local credentials and unnecessary artefacts.
+.git/
+.github/
+.venv/
+.venv_*/
+node_modules/
+__pycache__/
+*.py[cod]
+
+.env
+.env.*
+!.env.example
+service-account*.json
+*.key.json
+*.pem
+*.p12
+
+# Raw observations and local report/audit logs must not be uploaded by source
+# deployment. Reviewed aggregate CSV files remain available to the prototype.
+data/raw/
+data/processed/*.jsonl
+*.joblib
+
+.pytest_cache/
+.streamlit/
+docx_render_*/
+_docx_render_*/
+docs/*_render*/
+docs/*.inspect.ndjson
+*.docx
+*.pdf
+tests/
+notebooks/
+
+# The build uses Dockerfile and requirements files; deployment administration
+# files remain local rather than becoming image source.
+deploy/
+firebase.json
+firestore.rules
+storage.rules

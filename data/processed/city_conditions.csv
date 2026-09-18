@@ -1,0 +1,9 @@
+city_id,city_name,state,current_pm25,reporting_stations,temperature_c,humidity_percent,wind_speed_kmh,precipitation_mm,latitude,longitude
+CITY_001,Delhi NCR,State,31.6,9,30.0,60.0,10.0,0.0,19.5564,74.3169
+CITY_002,Chennai,State,55.09,9,30.0,60.0,10.0,0.0,17.4674,81.4799
+CITY_003,Mumbai,State,37.36,4,30.0,60.0,10.0,0.0,22.695,77.8393
+CITY_004,Bengaluru,State,54.3,2,30.0,60.0,10.0,0.0,16.0539,77.9981
+CITY_005,Hyderabad,State,175.92,3,30.0,60.0,10.0,0.0,17.66,78.5946
+CITY_006,Kolkata,State,219.88,9,30.0,60.0,10.0,0.0,17.6929,74.9459
+CITY_007,Lucknow,State,213.67,10,30.0,60.0,10.0,0.0,17.4632,81.0048
+CITY_008,Jaipur,State,75.69,1,30.0,60.0,10.0,0.0,17.4522,76.1331

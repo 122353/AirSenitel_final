@@ -1,0 +1,5 @@
+area_id,area_name,district_or_city,latitude,longitude,area_type,pollutant_code,hourly_observations,reporting_stations,freshness_hours_at_download,nearest_station_distance_metres,spatial_resolution,median_measurement_coverage_percent,evidence_status
+DEL_MEH,Locality DEL_MEH,Delhi NCR,28.558944374745327,77.2271520164077,Locality,PM2.5,163,1,1,838,1km,91.9,Valid
+DEL_NAJ,Locality DEL_NAJ,Delhi NCR,28.645528169523022,77.24372084974888,Locality,PM2.5,462,3,2,1012,1km,83.8,Valid
+DEL_ROH,Locality DEL_ROH,Delhi NCR,28.617928651537394,77.16212796700404,Locality,PM2.5,376,2,0,697,1km,89.0,Valid
+DEL_SFE,Locality DEL_SFE,Delhi NCR,28.526922893859087,77.10635866686867,Locality,PM2.5,142,3,0,609,1km,84.6,Valid

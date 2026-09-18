@@ -1,0 +1,47 @@
+[
+  {
+    "alert_id": "ALT-8449",
+    "location": "Okhla",
+    "type": "Forecast Warning",
+    "severity": "Critical",
+    "message": "PM2.5 levels expected to rise significantly in the next 3 hours.",
+    "timestamp": "2026-09-18T11:28:09Z",
+    "status": "Active"
+  },
+  {
+    "alert_id": "ALT-1412",
+    "location": "Okhla",
+    "type": "Sensor Anomaly",
+    "severity": "Critical",
+    "message": "PM2.5 levels expected to rise significantly in the next 3 hours.",
+    "timestamp": "2026-09-18T11:01:09Z",
+    "status": "Active"
+  },
+  {
+    "alert_id": "ALT-3157",
+    "location": "Okhla",
+    "type": "Forecast Warning",
+    "severity": "Info",
+    "message": "PM2.5 levels expected to rise significantly in the next 3 hours.",
+    "timestamp": "2026-09-18T10:36:09Z",
+    "status": "Active"
+  },
+  {
+    "alert_id": "ALT-6176",
+    "location": "Okhla",
+    "type": "Threshold Exceeded",
+    "severity": "Warning",
+    "message": "PM2.5 levels expected to rise significantly in the next 3 hours.",
+    "timestamp": "2026-09-18T14:13:09Z",
+    "status": "Active"
+  },
+  {
+    "alert_id": "ALT-8089",
+    "location": "RK Puram",
+    "type": "Forecast Warning",
+    "severity": "Info",
+    "message": "PM2.5 levels expected to rise significantly in the next 3 hours.",
+    "timestamp": "2026-09-18T13:27:09Z",
+    "status": "Active"
+  }
+]

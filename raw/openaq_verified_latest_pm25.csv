@@ -1,0 +1,31 @@
+city_id,city_name,state,station_id,station_name,sensor_id,timestamp_utc,pm25,latitude,longitude,distance_metres,data_source
+BLR,Bengaluru,Karnataka,6983,"Hombegowda Nagar, Bengaluru - KSPCB",12235258,2026-08-25T03:30:00Z,12.0,12.938539,77.5901,3689.98907492,OpenAQ verified monitored measurement
+BLR,Bengaluru,Karnataka,6983,"Hombegowda Nagar, Bengaluru - KSPCB",20199,2022-10-16T16:00:00Z,20.0,12.938539,77.5901,3689.98907492,OpenAQ verified monitored measurement
+BLR,Bengaluru,Karnataka,6206921,Koramangala,15203555,2026-08-25T04:00:00Z,32.7,12.9370223,77.6115928,4246.50066873,OpenAQ verified monitored measurement
+CHE,Chennai,Tamil Nadu,8558,Chennai,5077812,2026-08-25T05:30:00Z,25.0,13.08784,80.278475,1017.00990678,OpenAQ verified monitored measurement
+CHE,Chennai,Tamil Nadu,11578,"Royapuram, Chennai - TNPCB",12236299,2026-08-25T03:30:00Z,24.84,13.1036,80.2909,3185.09736365,OpenAQ verified monitored measurement
+CHE,Chennai,Tamil Nadu,11578,"Royapuram, Chennai - TNPCB",39321,2022-10-16T16:00:00Z,2.0,13.1036,80.2909,3185.09736365,OpenAQ verified monitored measurement
+CHE,Chennai,Tamil Nadu,2461,US Diplomatic Post: Chennai,4725,2016-11-09T16:30:00Z,73.4,13.052371,80.251932,3924.46876464,OpenAQ verified monitored measurement
+DEL,Delhi NCR,Delhi,6254594,"Talkatora Garden, Delhi - DPCC",15554208,2026-08-25T03:45:00Z,12.62,28.62181,77.1944633,1670.18980322,OpenAQ verified monitored measurement
+DEL,Delhi NCR,Delhi,236,"Mandir Marg, Delhi - DPCC",388,2018-02-21T21:15:00Z,149.0,28.6341,77.2005,2388.08421717,OpenAQ verified monitored measurement
+DEL,Delhi NCR,Delhi,5755,"Major Dhyan Chand National Stadium, Delhi - DPCC",15551,2018-05-10T09:30:00Z,62.0,28.6125027,77.2351994,2566.96225557,OpenAQ verified monitored measurement
+KAN,Kanpur,Uttar Pradesh,2595,Nehru Nagar,5391,2018-02-22T03:15:00Z,167.0,26.470308800000005,80.3251749,2358.55521991,OpenAQ verified monitored measurement
+KAN,Kanpur,Uttar Pradesh,5662,"Nehru Nagar, Kanpur - UPPCB",12235513,2026-08-25T03:30:00Z,17.0,26.4703136,80.3229863,2430.13898023,OpenAQ verified monitored measurement
+KAN,Kanpur,Uttar Pradesh,5662,"Nehru Nagar, Kanpur - UPPCB",15183,2022-10-31T02:00:00Z,209.0,26.4703136,80.3229863,2430.13898023,OpenAQ verified monitored measurement
+KAN,Kanpur,Uttar Pradesh,234568,"FTI Kidwai Nagar, Kanpur - UPPCB",12236815,2026-08-25T03:30:00Z,107.1,26.428282,80.327067,2443.18945459,OpenAQ verified monitored measurement
+KAN,Kanpur,Uttar Pradesh,234568,"FTI Kidwai Nagar, Kanpur - UPPCB",1349388,2022-10-31T02:00:00Z,153.98,26.428282,80.327067,2443.18945459,OpenAQ verified monitored measurement
+KOL,Kolkata,West Bengal,910,Victoria Memorial - WBSPCB,13556,2017-10-16T20:45:00Z,0.0,22.572646,88.36389499999996,5.11983963,OpenAQ verified monitored measurement
+KOL,Kolkata,West Bengal,8172,US Diplomatic Post: Kolkata,5077640,2025-03-04T11:30:00Z,-999.0,22.56263,88.36304,1107.59513784,OpenAQ verified monitored measurement
+KOL,Kolkata,West Bengal,6310,"Rabindra Bharati University, Kolkata - WBPCB",1715600,2022-03-24T23:30:00Z,112.0,22.5824635,88.35724470000001,1288.9838743,OpenAQ verified monitored measurement
+LKO,Lucknow,Uttar Pradesh,354,"Lalbagh, DN Park",14362,2018-02-22T04:00:00Z,224.64,26.84578611,80.93874444,747.89128662,OpenAQ verified monitored measurement
+LKO,Lucknow,Uttar Pradesh,5659,"Lalbagh, Lucknow - CPCB",12235522,2026-08-25T03:30:00Z,18.9,26.8458805,80.9365541,962.99147931,OpenAQ verified monitored measurement
+LKO,Lucknow,Uttar Pradesh,5659,"Lalbagh, Lucknow - CPCB",15143,2022-10-31T01:45:00Z,116.9,26.8458805,80.9365541,962.99147931,OpenAQ verified monitored measurement
+LKO,Lucknow,Uttar Pradesh,5604,"Nishant Ganj, Lucknow - UPPCB",14845,2019-08-21T08:15:00Z,5.0,26.871428,80.957145,2947.89843501,OpenAQ verified monitored measurement
+MUM,Mumbai,Maharashtra,8039,Mumbai,23320,2026-08-25T05:30:00Z,19.0,19.07283,72.88261,624.6300345,OpenAQ verified monitored measurement
+MUM,Mumbai,Maharashtra,6945,"Kurla, Mumbai - MPCB",12235834,2026-08-25T03:30:00Z,25.6,19.0863,72.8888,1632.34337709,OpenAQ verified monitored measurement
+MUM,Mumbai,Maharashtra,6945,"Kurla, Mumbai - MPCB",19978,2022-10-31T02:00:00Z,72.0,19.0863,72.8888,1632.34337709,OpenAQ verified monitored measurement
+MUM,Mumbai,Maharashtra,3409482,"Bandra Kurla Complex, Mumbai - MPCB",12238375,2026-08-25T03:15:00Z,16.37,19.065931,72.862131,1981.72992894,OpenAQ verified monitored measurement
+PUN,Pune,Maharashtra,11613,"Revenue Colony-Shivajinagar, Pune - IITM",12236463,2026-08-25T03:30:00Z,28.96,18.530085,73.849598,1308.24268876,OpenAQ verified monitored measurement
+PUN,Pune,Maharashtra,11613,"Revenue Colony-Shivajinagar, Pune - IITM",39466,2022-07-07T07:15:00Z,33.3,18.530085,73.849598,1308.24268876,OpenAQ verified monitored measurement
+PUN,Pune,Maharashtra,60660,"MIT-Kothrud, Pune - IITM",389757,2022-07-11T05:15:00Z,17.5,18.517754,73.8214883,3729.54896115,OpenAQ verified monitored measurement
+PUN,Pune,Maharashtra,3409439,"Savitribai Phule Pune University, Pune - MPCB",12238005,2026-08-22T14:15:00Z,8.17,18.547056,73.826908,4312.6959628,OpenAQ verified monitored measurement

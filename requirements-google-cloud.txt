@@ -1,0 +1,11 @@
+# Optional Google Cloud connectors for the approved, reviewed prototype path.
+# They are installed in the Cloud Run image, but each connector stays disabled
+# until its API, IAM, retention policy and implementation are explicitly ready.
+google-genai==2.19.0
+google-cloud-bigquery==3.44.0
+google-cloud-aiplatform==1.165.1
+firebase-admin==7.5.0
+earthengine-api==1.7.41
+google-cloud-speech==2.40.0
+google-cloud-texttospeech==2.37.0
+google-cloud-translate==3.27.0

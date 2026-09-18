@@ -1,0 +1,13 @@
+area_name,horizon,input_time_utc,forecast_for_utc,current_pm25_input,predicted_pm25,selected_model,empirical_interval_low,empirical_interval_high,forecast_status
+Locality DEL_MEH,1h,2026-09-18T15:30:56Z,2026-09-18T16:30:56Z,148.7,154.9,Persistence + Noise,139.9,169.9,Success
+Locality DEL_MEH,3h,2026-09-18T15:30:56Z,2026-09-18T18:30:56Z,148.7,169.8,Persistence + Noise,154.8,184.8,Success
+Locality DEL_MEH,4h,2026-09-18T15:30:56Z,2026-09-18T19:30:56Z,148.7,104.2,Persistence + Noise,89.2,119.2,Success
+Locality DEL_NAJ,1h,2026-09-18T15:30:56Z,2026-09-18T16:30:56Z,91.2,88.6,Persistence + Noise,73.6,103.6,Success
+Locality DEL_NAJ,3h,2026-09-18T15:30:56Z,2026-09-18T18:30:56Z,91.2,88.5,Persistence + Noise,73.5,103.5,Success
+Locality DEL_NAJ,4h,2026-09-18T15:30:56Z,2026-09-18T19:30:56Z,91.2,106.1,Persistence + Noise,91.1,121.1,Success
+Locality DEL_ROH,1h,2026-09-18T15:30:56Z,2026-09-18T16:30:56Z,54.9,51.6,Persistence + Noise,36.6,66.6,Success
+Locality DEL_ROH,3h,2026-09-18T15:30:56Z,2026-09-18T18:30:56Z,54.9,74.9,Persistence + Noise,59.9,89.9,Success
+Locality DEL_ROH,4h,2026-09-18T15:30:56Z,2026-09-18T19:30:56Z,54.9,48.5,Persistence + Noise,33.5,63.5,Success
+Locality DEL_SFE,1h,2026-09-18T15:30:56Z,2026-09-18T16:30:56Z,190.6,194.9,Persistence + Noise,179.9,209.9,Success
+Locality DEL_SFE,3h,2026-09-18T15:30:56Z,2026-09-18T18:30:56Z,190.6,183.4,Persistence + Noise,168.4,198.4,Success
+Locality DEL_SFE,4h,2026-09-18T15:30:56Z,2026-09-18T19:30:56Z,190.6,185.6,Persistence + Noise,170.6,200.6,Success
