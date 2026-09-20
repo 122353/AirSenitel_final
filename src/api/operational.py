@@ -17,6 +17,7 @@ from src.services import case_store_v2 as store
 from src.services import federation_v2 as federation
 from src.services import devices_v2 as devices
 from src.services.monitoring_v2 import build_snapshot
+from src.services.india_intelligence_v2 import assess_location, india_overview, search_india_places
 
 MAX_BODY = 1_500_000
 MAX_PHOTO = 1_000_000
@@ -67,6 +68,26 @@ async def monitoring(station_id: int | None = Query(None, gt=0), pollutant: str 
     if result.get('status') == 'overloaded':
         return JSONResponse(result, status_code=429, headers={'Retry-After': '15'})
     return result
+
+
+@app.get('/v2/india/overview')
+async def national_overview(pollutant: str = Query('pm25', pattern='^(pm25|pm10|no2|so2|o3|co)$')):
+    return await india_overview(pollutant=pollutant)
+
+
+@app.get('/v2/india/places')
+async def india_places(query: str = Query(min_length=2, max_length=80), limit: int = Query(8, ge=1, le=20)):
+    return await search_india_places(query=query, limit=limit)
+
+
+@app.get('/v2/india/assessment')
+async def india_assessment(
+    latitude: float = Query(ge=6.0, le=38.5),
+    longitude: float = Query(ge=68.0, le=98.5),
+    pollutant: str = Query('pm25', pattern='^(pm25|pm10|no2|so2|o3|co)$'),
+    label: str | None = Query(None, max_length=120),
+):
+    return await assess_location(latitude=latitude, longitude=longitude, pollutant=pollutant, label=label)
 
 
 @app.get('/v2/session')

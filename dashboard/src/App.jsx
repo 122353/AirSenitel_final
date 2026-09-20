@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
-import { Link, NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { Link, NavLink, Route, Routes, useLocation } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Activity, ArrowDownToLine, ArrowRight, ArrowUpRight, Check, ChevronDown, CircleHelp, Clock3, Database, Globe2, LayoutDashboard, LockKeyhole, MapPin, Menu, Radio, RefreshCw, ShieldCheck, Wind } from 'lucide-react';
 import { MonitoringProvider, POLLUTANTS, ageLabel, dateLabel, pollutantLabel, useMonitoring, valueLabel, latestMeasurement, freshMeasurement, usableMeasurement } from './features/data';
@@ -8,9 +8,11 @@ import CitizenReport from './features/CitizenReport';
 import ModelExchange from './features/ModelExchange';
 const StationMap = lazy(() => import('./features/StationMap'));
 const Authority = lazy(() => import('./features/Authority'));
+const NationalIntelligence = lazy(() => import('./features/NationalIntelligence'));
 
 const navigation = [
   { to: '/', label: 'Overview', icon: LayoutDashboard, exact: true },
+  { to: '/national', label: 'India intelligence', icon: Globe2 },
   { to: '/live', label: 'Live monitoring', icon: Activity },
   { to: '/sensors', label: 'Sensor network', icon: Radio },
   { to: '/report', label: 'Community reports', icon: MapPin },
@@ -29,13 +31,13 @@ function AppShell() {
     {menuOpen ? <button className="sidebar-backdrop" onClick={() => setMenuOpen(false)} aria-label="Close navigation" /> : null}
     <aside className={`sidebar ${menuOpen ? 'is-open' : ''}`}>
       <Link to="/" className="brand"><span className="brand-mark"><Wind size={22} /></span><span>AirSentinel<span className="brand-caption">ENVIRONMENTAL INTELLIGENCE</span></span></Link>
-      <div className="workspace"><span className="workspace-icon">IN</span><div>Delhi NCR pilot<small>Public observatory</small></div><ChevronDown size={14} /></div>
+      <div className="workspace"><span className="workspace-icon">IN</span><div>India research network<small>Delhi ground-data pilot</small></div><ChevronDown size={14} /></div>
       <span className="nav-label">EXPLORE</span>
-      <nav aria-label="Primary navigation">{navigation.map(({ to, label, icon: Icon, exact }, index) => <NavLink key={to} to={to} end={exact} className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}><Icon size={18} /><span>{label}</span>{index === 1 ? <i className="nav-live-dot" /> : null}</NavLink>)}</nav>
+      <nav aria-label="Primary navigation">{navigation.map(({ to, label, icon: Icon, exact }) => <NavLink key={to} to={to} end={exact} className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}><Icon size={18} /><span>{label}</span>{to === '/live' ? <i className="nav-live-dot" /> : null}</NavLink>)}</nav>
       <div className="sidebar-bottom"><div className="pilot-note"><div className="pilot-note-icon"><ShieldCheck size={19} /></div><h3>Evidence before action.</h3><p>A research pilot for cleaner air. Every reading keeps its source.</p><a href="https://docs.openaq.org/" target="_blank" rel="noreferrer">Explore data standards <ArrowUpRight size={13} /></a></div><Link to="/authority" className="operator-link"><LockKeyhole size={16} /><span>Operator access</span><ArrowUpRight size={14} /></Link><div className="sidebar-version"><span className="status-dot" /> AIRSENTINEL <span>RESEARCH PILOT</span></div></div>
     </aside>
     <div className="main-shell"><header className="topbar"><div className="breadcrumb"><button className="mobile-menu icon-button" aria-label="Open navigation" onClick={() => setMenuOpen(true)}><Menu size={21} /></button><span>Workspace</span><span className="breadcrumb-slash">/</span><strong>{current?.label || 'Operator access'}</strong></div><div className="topbar-right"><span className={`topbar-status ${freshMeasurement(measurement, mode, error) ? 'live' : ''}`}><i />{mode === 'archive' ? 'Research archive' : error ? 'Feed check failed' : freshMeasurement(measurement, mode, error) ? 'Feed connected' : data?.status === 'delayed' ? 'Delayed observations' : data?.status === 'partial' ? 'Partial coverage' : 'Checking source availability'}</span><button className="icon-button" onClick={refresh} disabled={refreshing} aria-label="Refresh monitoring data" title="Refresh monitoring data"><RefreshCw className={refreshing ? 'spin' : ''} size={17} /></button><span className="region-chip">IN</span></div></header>
-      <main id="main-content"><motion.div key={location.pathname} initial={reducedMotion ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.22 }}><Suspense fallback={<div className="route-loading"><RefreshCw className="spin" size={22} /> Opening workspace…</div>}><Routes><Route path="/" element={<Overview />} /><Route path="/live" element={<LiveMonitoring />} /><Route path="/sensors" element={<Sensors />} /><Route path="/report" element={<CitizenReport />} /><Route path="/brics" element={<ModelExchange />} /><Route path="/authority/*" element={<Authority />} /><Route path="/national" element={<Navigate to="/" replace />} /><Route path="*" element={<NotFound />} /></Routes></Suspense></motion.div></main>
+      <main id="main-content"><motion.div key={location.pathname} initial={reducedMotion ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.22 }}><Suspense fallback={<div className="route-loading"><RefreshCw className="spin" size={22} /> Opening workspace…</div>}><Routes><Route path="/" element={<Overview />} /><Route path="/national" element={<NationalIntelligence />} /><Route path="/live" element={<LiveMonitoring />} /><Route path="/sensors" element={<Sensors />} /><Route path="/report" element={<CitizenReport />} /><Route path="/brics" element={<ModelExchange />} /><Route path="/authority/*" element={<Authority />} /><Route path="*" element={<NotFound />} /></Routes></Suspense></motion.div></main>
       <footer className="site-footer"><span>AirSentinel · Open evidence. Informed decisions.</span><span>Research decision support · Not official AQI</span></footer>
     </div>
   </div>;

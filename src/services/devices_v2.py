@@ -18,8 +18,10 @@ from src.services.case_store_v2 import (
 )
 
 
-# Matches the public monitoring discovery scope; not an administrative boundary.
-DELHI_NCR_BBOX = (76.8, 28.3, 77.6, 29.0)
+# Broad India operating bounds; not an administrative or national-boundary polygon.
+INDIA_BBOX = (68.0, 6.0, 98.5, 38.5)
+# Retained as a compatibility alias for existing integrations that import it.
+DELHI_NCR_BBOX = INDIA_BBOX
 MAX_SAMPLES = 100
 MAX_QUERY_ROWS = 10000
 MAX_QUERY_HOURS = 72
@@ -31,10 +33,7 @@ BACKGROUND_DISTANCE_M = 3000
 PM25_SCREENING_THRESHOLD = 75
 MIN_BACKGROUND_RATIO = 1.5
 MIN_BACKGROUND_EXCESS = 20
-_METERS_PER_DEGREE = 111320.0
-_GRID_LATITUDE = 28.3
-_GRID_LONGITUDE = 76.8
-_LONGITUDE_SCALE = _METERS_PER_DEGREE * math.cos(math.radians(28.65))
+_WEB_MERCATOR_RADIUS_M = 6378137.0
 
 
 def _timestamp(value, field):
@@ -90,9 +89,9 @@ def register_device(payload: dict, actor: dict) -> dict:
     physical_id = _text(payload["physical_device_id"], "physical_device_id", 128)
     physical_id = " ".join(unicodedata.normalize("NFKC", physical_id).casefold().split())
     fingerprint = _digest(physical_id)
-    west, south, east, north = DELHI_NCR_BBOX
-    latitude = _number(payload["latitude"], "latitude in Delhi/NCR pilot bounds", south, north)
-    longitude = _number(payload["longitude"], "longitude in Delhi/NCR pilot bounds", west, east)
+    west, south, east, north = INDIA_BBOX
+    latitude = _number(payload["latitude"], "latitude in India operating bounds", south, north)
+    longitude = _number(payload["longitude"], "longitude in India operating bounds", west, east)
     accuracy = _number(payload["location_accuracy_m"], "location_accuracy_m", 0.01, 1000)
     environment = payload["environment"]
     if not isinstance(environment, str) or environment not in {"indoor", "outdoor"}:
@@ -218,16 +217,21 @@ def recent_observations(hours: int = 24, limit: int = 2000) -> dict:
 
 
 def _cell(latitude, longitude):
+    latitude = max(-85.05112878, min(85.05112878, latitude))
+    x = _WEB_MERCATOR_RADIUS_M * math.radians(longitude)
+    y = _WEB_MERCATOR_RADIUS_M * math.log(math.tan(math.pi / 4 + math.radians(latitude) / 2))
     return (
-        math.floor((longitude - _GRID_LONGITUDE) * _LONGITUDE_SCALE / CELL_SIZE_M),
-        math.floor((latitude - _GRID_LATITUDE) * _METERS_PER_DEGREE / CELL_SIZE_M),
+        math.floor(x / CELL_SIZE_M),
+        math.floor(y / CELL_SIZE_M),
     )
 
 
 def _cell_center(cell):
+    x = (cell[0] + 0.5) * CELL_SIZE_M
+    y = (cell[1] + 0.5) * CELL_SIZE_M
     return (
-        _GRID_LATITUDE + (cell[1] + 0.5) * CELL_SIZE_M / _METERS_PER_DEGREE,
-        _GRID_LONGITUDE + (cell[0] + 0.5) * CELL_SIZE_M / _LONGITUDE_SCALE,
+        math.degrees(2 * math.atan(math.exp(y / _WEB_MERCATOR_RADIUS_M)) - math.pi / 2),
+        math.degrees(x / _WEB_MERCATOR_RADIUS_M),
     )
 
 
@@ -312,7 +316,7 @@ def micro_candidates(data: dict, now: datetime | None = None) -> dict:
             if {"pollutant": "pm25", "unit": "ug/m3"} not in device.get("supported_channels", []):
                 excluded["no_pm25_channel"] += 1
                 continue
-            west, south, east, north = DELHI_NCR_BBOX
+            west, south, east, north = INDIA_BBOX
             lat = _number(device.get("latitude"), "latitude", south, north)
             lon = _number(device.get("longitude"), "longitude", west, east)
             if not isinstance(device.get("id"), str):
@@ -409,5 +413,5 @@ def micro_candidates(data: dict, now: datetime | None = None) -> dict:
         result["reasons"].append("No outdoor PM2.5 device meets the location, attestation, freshness and sustained-sample requirements.")
     if not result["candidates"]:
         result["reasons"].append("Evidence does not meet the multi-device and nearby-background screening conditions; no inspection candidate is inferred.")
-    result["reasons"].append("Coverage is limited to registered devices with usable observations; no complete Delhi sensor network or source attribution is claimed.")
+    result["reasons"].append("Coverage is limited to registered devices with usable observations; no complete India sensor network or source attribution is claimed.")
     return result

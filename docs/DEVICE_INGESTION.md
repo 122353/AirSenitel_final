@@ -1,7 +1,7 @@
 # Private device ingestion and inspection screening
 
-This interface is an authority-operated pilot ingestion path. It does not discover
-or connect all Delhi sensors. No unattended hardware gateway, machine credential,
+This interface is an authority-operated pilot ingestion path. It accepts registered
+devices across India, but it does not discover or connect every Indian sensor. No unattended hardware gateway, machine credential,
 government partnership or independently verified calibration is implied.
 
 ## Service contracts
@@ -39,9 +39,9 @@ Required fields are `physical_device_id`, `name`, `latitude`, `longitude`,
 `calibration_valid_until`, and `supported_channels`. The only optional field is
 `representativeness_radius_m`.
 
-Coordinates must fall inside the configured Delhi/NCR discovery box: longitude
-76.8–77.6 and latitude 28.3–29.0. This box is a pilot scope, not an administrative
-boundary. Location accuracy must be a finite positive value no greater than
+Coordinates must fall inside the configured India operating box: longitude
+68.0–98.5 and latitude 6.0–38.5. This conservative box is an input-validation
+boundary, not a precise national or maritime boundary. Location accuracy must be a finite positive value no greater than
 1,000 metres. The environment must explicitly be `indoor` or `outdoor`.
 
 `physical_device_id` should be a stable manufacturer-and-serial identifier known
@@ -105,8 +105,9 @@ for a real deployment. No unattended retention deletion runs in these services.
 
 The 250 m grid is an approximate local planning grid. It is not measured spatial
 resolution, microscopic source detection, a pollution contour or sensor coverage.
-No interpolation is performed between instruments. The grid uses a fixed local
-longitude scale, so its size is an approximation across the pilot box.
+No interpolation is performed between instruments. Grid assignment uses Web
+Mercator metres and remains an operational approximation, especially at higher
+latitudes; it is not an instrument-range claim.
 
 A device can contribute only when all of the following hold:
 

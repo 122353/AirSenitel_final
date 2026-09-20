@@ -25,8 +25,9 @@ This policy prevents a common failure mode in air-quality prototypes: presenting
 | 1 | Authorised CPCB data.gov.in real-time AQI snapshot | Preferred current official-source station snapshot after source and unit checks | The published endpoint is a current hourly snapshot, not an assured 180-day historical archive. |
 | 2 | Approved CPCB or State Pollution Control Board historical export | Model development after data-sharing approval, provenance checks, station QA, and chronological validation | Requires a documented licence/access path and station-level metadata. |
 | 3 | OpenAQ v3 historical fallback | Development-only historical coverage while approved official history is unavailable | Third-party aggregation; upstream provider conditions and quality must be verified. It is never relabelled as official. |
-| 4 | IMD-authorised weather, approved satellite or fire context | Weather covariates, plume or fire context, and human review support | Cannot prove a locality-level source or replace an outdoor monitor. |
-| 5 | Opt-in community reports and connected-device signals | Supporting evidence and investigation triage after moderation | No AQI calculation, source attribution, enforcement, or personal-data publication. |
+| 4 | CAMS global atmospheric model via Open-Meteo | India-wide regional screening and a six-hour pre-spike watch when ground coverage is absent | Approximately 45 km model grid; not a station reading, official AQI, or microscopic measurement. |
+| 5 | IMD-authorised weather, approved satellite or fire context | Weather covariates, plume or fire context, and human review support | Cannot prove a locality-level source or replace an outdoor monitor. |
+| 6 | Opt-in community reports and connected-device signals | Supporting evidence and investigation triage after moderation | No AQI calculation, source attribution, enforcement, or personal-data publication. |
 
 The repository source registry at data/reference/approved_data_source_registry.csv is the operational shortlist. It records the access method, owner, role, official-status wording, limitations, and canonical URL for each source. Adding a source to that registry is not the same as successfully collecting approved data from it.
 
@@ -94,6 +95,23 @@ Before displaying a local hotspot claim, the team must have all of the following
 
 The safe alternative is a coverage-gap or review-needed case. The system must not say that an industry, village, burning event, or named person caused a spike without verified evidence and authorised investigation.
 
+## India-wide model fallback
+
+The national intelligence routes support searching an Indian city, village or
+postcode and screening the selected coordinate. When a nearby fixed OpenAQ
+station is available and the server has authorised API access, its fresh
+observation remains separate from the model output. When no qualifying monitor
+is available, AirSentinel may show the CAMS global atmospheric-model estimate
+and its next-six-hour trend with an explicit `model_estimate_only` state.
+
+This fallback provides geographic continuity, not street-level truth. Its
+approximately 45 km grid can miss brief traffic, construction, industrial,
+waste-burning and neighbourhood events. Microscopic detection therefore
+requires a local calibrated outdoor sensor cluster: at least two agreeing
+devices in a 250 m inspection cell plus contemporaneous nearby background
+devices under the private screening rules. Satellite imagery and citizen
+reports may prioritise where to place or move sensors, but do not replace them.
+
 ## Weather, satellite, community, and purifier context
 
 - **Weather:** Use IMD-authorised data when access is available. Reanalysis or Open-Meteo-style weather feeds are contextual development covariates, not a local monitor replacement.
@@ -108,7 +126,8 @@ The safe alternative is a coverage-gap or review-needed case. The system must no
 | Official current snapshot available and validated | Source-published current station snapshot with provenance | That AirSentinel independently certifies the value, or that it is historical coverage. |
 | Approved official historical export available | Historical research, coverage analysis, and held-out evaluation | Live alerting, causation, or enforcement based on a model alone. |
 | Only OpenAQ history available | Historical prototype results and development coverage gaps | Official CPCB integration, operational readiness, or neighbourhood-level source proof. |
-| No verified locality station coverage | Coverage gap, requested-data status, moderated supporting reports | Local AQI, hotspot, or enforcement claim. |
+| No verified locality station, CAMS model available | Explicit regional model estimate, six-hour model trend, low-confidence pre-spike watch, and a request for local sensing | Official/local AQI, microscopic measurement, source proof, or enforcement claim. |
+| No verified station or usable model | Coverage gap, requested-data status, moderated supporting reports | Local AQI, hotspot, or enforcement claim. |
 
 ## Required provenance fields
 
@@ -140,5 +159,6 @@ An authority queue may recommend a human review, data-quality check, or request 
 - IITM/MoES SAFAR Early Warning System: https://ews.tropmet.res.in/
 - OpenAQ measurement documentation: https://docs.openaq.org/resources/measurements
 - OpenAQ pagination documentation: https://docs.openaq.org/using-the-api/pagination
+- Open-Meteo Air Quality API/CAMS model documentation: https://open-meteo.com/en/docs/air-quality-api
 
 Do not scrape CAPTCHA-protected or undocumented government endpoints. If approved data access is unavailable, retain the fallback label and report the coverage gap instead of weakening provenance.

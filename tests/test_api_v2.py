@@ -105,6 +105,20 @@ class ApiTests(unittest.TestCase):
             self.assertEqual(result.status_code, 200)
             self.assertEqual(result.json()['status'], 'unavailable')
 
+    def test_india_routes_validate_coordinates_and_preserve_evidence_classes(self):
+        self.assertEqual(self.client.get('/v2/india/assessment?latitude=0&longitude=77').status_code, 422)
+        self.assertEqual(self.client.get('/v2/india/places?query=x').status_code, 422)
+        with patch.object(self.api, 'india_overview', AsyncMock(return_value={'status':'available','cities':[]})):
+            response = self.client.get('/v2/india/overview?pollutant=pm25')
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.json()['status'], 'available')
+        with patch.object(self.api, 'assess_location', AsyncMock(return_value={
+            'status':'model_estimate_only', 'ground':{'status':'not_configured'},
+            'model':{'evidence_class':'atmospheric_model_estimate','official_aqi':False}})):
+            response = self.client.get('/v2/india/assessment?latitude=19.076&longitude=72.8777&pollutant=pm25')
+            self.assertEqual(response.status_code, 200)
+            self.assertFalse(response.json()['model']['official_aqi'])
+
     def test_monitoring_overload_returns_retry_after(self):
         with patch.object(self.api, 'build_snapshot', AsyncMock(return_value={'status':'overloaded','retry_after_seconds':15})):
             response = self.client.get('/v2/monitoring')

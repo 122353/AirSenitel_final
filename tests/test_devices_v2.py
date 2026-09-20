@@ -65,6 +65,13 @@ class DeviceStoreTests(unittest.TestCase):
         with closing(sqlite3.connect(self.path)) as connection:
             self.assertEqual(AUTHORITY["user_id"], connection.execute("SELECT registered_by FROM airv2_devices").fetchone()[0])
 
+    def test_registration_accepts_real_device_locations_across_india(self):
+        record = devices.register_device(device_payload(
+            "MUMBAI-TEST-DEVICE", latitude=19.076, longitude=72.8777,
+            name="Mumbai operator-attested test device"), AUTHORITY)
+        self.assertEqual(19.076, record["latitude"])
+        self.assertEqual(72.8777, record["longitude"])
+
     def test_registration_rejects_outside_bounds_credentials_and_invalid_attestations(self):
         invalid = [
             device_payload(latitude=0), device_payload(longitude=100), device_payload(location_accuracy_m=1001),

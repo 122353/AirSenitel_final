@@ -9,11 +9,13 @@ The earlier dashboard displayed generated values and its API exposed review acti
 ## Data and detection
 
 - `/api/v2/monitoring` discovers OpenAQ metadata in a stated Delhi/NCR bounding box, then queries the selected station and two nearby comparison points within bounded request/time limits. The metadata count is not the count of online sensors, complete Delhi coverage or an administrative boundary.
+- `/api/v2/india/places`, `/api/v2/india/assessment`, and `/api/v2/india/overview` add India-wide place/postcode search, coordinate assessment, and a bounded national watchlist. The public India map uses real map tiles; watchlist values are CAMS global model estimates, not official city AQI.
+- A six-hour pre-spike screen compares the regional model forecast with a robust recent baseline. It is an early-warning screening signal only: approximately 45 km model cells cannot predict every sudden street-level event.
 - Every measurement retains its pollutant, original unit, timestamp, provider, licence and quality. Unknown quality stays provisional. Rejected and stale values cannot silently qualify as fresh evidence.
 - A lag-based ridge regressor competes against persistence using earlier validation. Separate calibration and final holdout avoid choosing a model on its test score. Scoring origins are purged at split boundaries. Short histories, missing lags and stale inputs produce explicit limitations; forecasts are research outputs.
 - Weather and satellite imagery are context, not street-level ground measurements or source attribution. Delayed archive readings are labelled historical, not live.
 - Station positions have no invented 5 km representativeness radius. Changing a search radius cannot create spatial evidence.
-- Private local-device ingestion uses registered operator-attested hardware identities, immutable timestamped measurements and explicit units. Local PM2.5 screening requires precise outdoor locations, sustained fresh samples, multi-device agreement and contemporaneous nearby background data.
+- Private local-device ingestion accepts registered devices across the India operating bounds and uses operator-attested hardware identities, immutable timestamped measurements and explicit units. It does not automatically connect government or privately owned networks. Local PM2.5 screening requires precise outdoor locations, sustained fresh samples, multi-device agreement and contemporaneous nearby background data.
 - A 250 m inspection cell is an operational grouping, not microscopic sensing or validated measurement resolution. Physical independence and calibration still require verification; no qualified evidence means no candidate.
 
 ## People and privacy
@@ -37,7 +39,7 @@ The two previously working Vercel projects were paused at the user's request. Th
 7. Test a clearly labelled temporary report through private review and withdrawal, without external dispatch.
 8. Resume/promote only after user approval; then check runtime errors and configure monitoring, data retention and distributed quota protection.
 
-The tested local configuration uses a previously approved **development** Clerk integration and explicit local SQLite. This is not a claim that production identity/database wiring is complete. Registered-device support is an ingestion path, not an automatic connection to every privately owned purifier or government instrument.
+The production deployment uses configured Clerk and PostgreSQL integrations; local tests continue to use explicit SQLite. Registered-device support is an ingestion path, not an automatic connection to every privately owned purifier or government instrument. Without `OPENAQ_API_KEY`, national assessments remain available through the labelled CAMS model fallback, while the ground-station tier reports that it is not configured.
 
 ## Primary documentation
 
