@@ -15,3 +15,7 @@ docs/*.inspect.ndjson
 dashboard/node_modules/
 dashboard/dist/
 .vercel
+.agents/
+skills-lock.json
+
+.env*

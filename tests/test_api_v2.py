@@ -117,6 +117,20 @@ class ApiTests(unittest.TestCase):
             self.assertEqual(client.get('/api/health').status_code, 200)
             self.assertEqual(client.get('/health').status_code, 404)
 
+    def test_vercel_schema_bootstrap_requires_explicit_flag(self):
+        service = importlib.import_module('api_service')
+        with patch.object(service.case_store_v2, 'initialize_store') as cases, \
+             patch.object(service.devices_v2, 'initialize_devices') as devices:
+            with TestClient(service.app):
+                pass
+            cases.assert_not_called()
+            devices.assert_not_called()
+            with patch.dict(os.environ, {'AIRSENTINEL_INIT_SCHEMA': '1'}):
+                with TestClient(service.app):
+                    pass
+            cases.assert_called_once_with()
+            devices.assert_called_once_with()
+
 
 if __name__ == '__main__':
     unittest.main()
