@@ -25,8 +25,9 @@ export default function NationalIntelligence() {
   }, [pollutant]);
 
   const selectPlace = useCallback(async place => {
-    setSelected(place); setPlaces([]); setQuery(place.label); setLoading(true); setError('');
-    try { await loadAssessment(place); } catch (err) { setError(err.message); setAssessment(null); } finally { setLoading(false); }
+    const focusedPlace = { ...place, focus: true };
+    setSelected(focusedPlace); setPlaces([]); setQuery(place.label); setLoading(true); setError('');
+    try { await loadAssessment(focusedPlace); } catch (err) { setError(err.message); setAssessment(null); } finally { setLoading(false); }
   }, [loadAssessment]);
 
   useEffect(() => {

@@ -58,7 +58,7 @@ export default function IndiaCoverageMap({ cities = [], selected, pollutant, onS
   }, [cities, selected, pollutant, onSelect, ready]);
 
   useEffect(() => {
-    if (!mapRef.current || !selected || !Number.isFinite(selected.latitude) || !Number.isFinite(selected.longitude)) return;
+    if (!mapRef.current || !selected?.focus || !Number.isFinite(selected.latitude) || !Number.isFinite(selected.longitude)) return;
     mapRef.current.easeTo({ center: [selected.longitude, selected.latitude], zoom: Math.max(mapRef.current.getZoom(), 7), duration: matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 700 });
   }, [selected]);
 
