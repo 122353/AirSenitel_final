@@ -3,7 +3,7 @@
 .venv_broken_*/
 node_modules/
 __pycache__/
-.env
+.env*
 data/raw/
 *.joblib
 data/processed/community_reports.jsonl
