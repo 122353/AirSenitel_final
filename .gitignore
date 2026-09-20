@@ -14,6 +14,8 @@ docs/*_render*/
 docs/*.inspect.ndjson
 dashboard/node_modules/
 dashboard/dist/
+build/
+*.egg-info/
 .vercel
 .agents/
 skills-lock.json
