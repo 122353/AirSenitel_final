@@ -1,59 +1,95 @@
-import React, { useState, useEffect } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
-import { AnimatePresence, motion } from 'framer-motion';
-import Sidebar from './components/ui/Sidebar';
-import AuthorityDashboard from './pages/AuthorityDashboard';
-import LiveDetection from './pages/LiveDetection';
-import SensorMap3D from './pages/SensorMap3D';
-import NationalOverview from './pages/NationalOverview';
-import BRICSFederation from './pages/BRICSFederation';
-import CitizenReport from './pages/CitizenReport';
+import { lazy, Suspense, useEffect, useState } from 'react';
+import { Link, NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { motion, useReducedMotion } from 'framer-motion';
+import { Activity, ArrowDownToLine, ArrowRight, ArrowUpRight, Check, ChevronDown, CircleHelp, Clock3, Database, Globe2, LayoutDashboard, LockKeyhole, MapPin, Menu, Radio, RefreshCw, ShieldCheck, Wind } from 'lucide-react';
+import { MonitoringProvider, POLLUTANTS, ageLabel, dateLabel, pollutantLabel, useMonitoring, valueLabel, latestMeasurement, freshMeasurement, usableMeasurement } from './features/data';
+import EvidenceChart from './features/Charts';
+import CitizenReport from './features/CitizenReport';
+import ModelExchange from './features/ModelExchange';
+const StationMap = lazy(() => import('./features/StationMap'));
+const Authority = lazy(() => import('./features/Authority'));
 
-function App() {
-  const [theme, setTheme] = useState('dark');
+const navigation = [
+  { to: '/', label: 'Overview', icon: LayoutDashboard, exact: true },
+  { to: '/live', label: 'Live monitoring', icon: Activity },
+  { to: '/sensors', label: 'Sensor network', icon: Radio },
+  { to: '/report', label: 'Community reports', icon: MapPin },
+  { to: '/brics', label: 'Model exchange', icon: Globe2 },
+];
+export default function App() { return <MonitoringProvider><AppShell /></MonitoringProvider>; }
+function AppShell() {
+  const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
-
-  useEffect(() => {
-    if (theme === 'dark') {
-      document.body.classList.add('dark', 'bg-slate-950', 'text-slate-50');
-      document.body.classList.remove('bg-slate-50', 'text-slate-900');
-    } else {
-      document.body.classList.remove('dark', 'bg-slate-950', 'text-slate-50');
-      document.body.classList.add('bg-slate-50', 'text-slate-900');
-    }
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme(t => t === 'dark' ? 'light' : 'dark');
-  };
-
-  return (
-    <div className={`flex h-screen overflow-hidden ${theme === 'dark' ? 'bg-animated-gradient' : 'bg-slate-100'}`}>
-      <Sidebar theme={theme} toggleTheme={toggleTheme} />
-      
-      <main className="flex-1 relative overflow-y-auto overflow-x-hidden">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={location.pathname}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className="min-h-full p-6"
-          >
-            <Routes location={location}>
-              <Route path="/" element={<AuthorityDashboard />} />
-              <Route path="/live" element={<LiveDetection />} />
-              <Route path="/sensors" element={<SensorMap3D theme={theme} />} />
-              <Route path="/national" element={<NationalOverview theme={theme} />} />
-              <Route path="/brics" element={<BRICSFederation theme={theme} />} />
-              <Route path="/report" element={<CitizenReport theme={theme} />} />
-            </Routes>
-          </motion.div>
-        </AnimatePresence>
-      </main>
+  const reducedMotion = useReducedMotion();
+  const { data, mode, refreshing, refresh, error, measurement } = useMonitoring();
+  const current = navigation.find(item => item.exact ? location.pathname === item.to : location.pathname.startsWith(item.to));
+  useEffect(() => { setMenuOpen(false); document.title = `${current?.label || 'Operator access'} · AirSentinel`; }, [location.pathname]);
+  return <div className="app-shell">
+    <a href="#main-content" className="skip-link">Skip to content</a>
+    {menuOpen ? <button className="sidebar-backdrop" onClick={() => setMenuOpen(false)} aria-label="Close navigation" /> : null}
+    <aside className={`sidebar ${menuOpen ? 'is-open' : ''}`}>
+      <Link to="/" className="brand"><span className="brand-mark"><Wind size={22} /></span><span>AirSentinel<span className="brand-caption">ENVIRONMENTAL INTELLIGENCE</span></span></Link>
+      <div className="workspace"><span className="workspace-icon">IN</span><div>Delhi NCR pilot<small>Public observatory</small></div><ChevronDown size={14} /></div>
+      <span className="nav-label">EXPLORE</span>
+      <nav aria-label="Primary navigation">{navigation.map(({ to, label, icon: Icon, exact }, index) => <NavLink key={to} to={to} end={exact} className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}><Icon size={18} /><span>{label}</span>{index === 1 ? <i className="nav-live-dot" /> : null}</NavLink>)}</nav>
+      <div className="sidebar-bottom"><div className="pilot-note"><div className="pilot-note-icon"><ShieldCheck size={19} /></div><h3>Evidence before action.</h3><p>A research pilot for cleaner air. Every reading keeps its source.</p><a href="https://docs.openaq.org/" target="_blank" rel="noreferrer">Explore data standards <ArrowUpRight size={13} /></a></div><Link to="/authority" className="operator-link"><LockKeyhole size={16} /><span>Operator access</span><ArrowUpRight size={14} /></Link><div className="sidebar-version"><span className="status-dot" /> AIRSENTINEL <span>RESEARCH PILOT</span></div></div>
+    </aside>
+    <div className="main-shell"><header className="topbar"><div className="breadcrumb"><button className="mobile-menu icon-button" aria-label="Open navigation" onClick={() => setMenuOpen(true)}><Menu size={21} /></button><span>Workspace</span><span className="breadcrumb-slash">/</span><strong>{current?.label || 'Operator access'}</strong></div><div className="topbar-right"><span className={`topbar-status ${freshMeasurement(measurement, mode, error) ? 'live' : ''}`}><i />{mode === 'archive' ? 'Research archive' : error ? 'Feed check failed' : freshMeasurement(measurement, mode, error) ? 'Feed connected' : data?.status === 'delayed' ? 'Delayed observations' : data?.status === 'partial' ? 'Partial coverage' : 'Checking source availability'}</span><button className="icon-button" onClick={refresh} disabled={refreshing} aria-label="Refresh monitoring data" title="Refresh monitoring data"><RefreshCw className={refreshing ? 'spin' : ''} size={17} /></button><span className="region-chip">IN</span></div></header>
+      <main id="main-content"><motion.div key={location.pathname} initial={reducedMotion ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.22 }}><Suspense fallback={<div className="route-loading"><RefreshCw className="spin" size={22} /> Opening workspace…</div>}><Routes><Route path="/" element={<Overview />} /><Route path="/live" element={<LiveMonitoring />} /><Route path="/sensors" element={<Sensors />} /><Route path="/report" element={<CitizenReport />} /><Route path="/brics" element={<ModelExchange />} /><Route path="/authority/*" element={<Authority />} /><Route path="/national" element={<Navigate to="/" replace />} /><Route path="*" element={<NotFound />} /></Routes></Suspense></motion.div></main>
+      <footer className="site-footer"><span>AirSentinel · Open evidence. Informed decisions.</span><span>Research decision support · Not official AQI</span></footer>
     </div>
-  );
+  </div>;
 }
-
-export default App;
+export function PageHeading({ eyebrow, title, description, action }) { return <div className="page-heading"><div><span className="eyebrow">{eyebrow}</span><h1>{title}</h1><p>{description}</p></div>{action}</div>; }
+export function EmptyState({ icon: Icon = Database, title, children }) { return <div className="empty-state"><span className="empty-icon"><Icon size={25} /></span><h3>{title}</h3><p>{children}</p></div>; }
+export function StatusBadge({ status, children }) { return <span className={`status-badge ${status || ''}`}><i />{children || String(status || 'unavailable').replaceAll('_', ' ')}</span>; }
+function MonitoringControls() {
+  const { stations, selectedStation, setStationId, pollutant, setPollutant, mode, setMode, refreshing, receivedAt } = useMonitoring();
+  return <div className="monitor-controls"><div className="station-select"><MapPin size={16} /><select aria-label="Select monitoring station" value={selectedStation?.id || ''} onChange={e => setStationId(e.target.value)} disabled={!stations.length}><option value="" disabled>{stations.length ? 'Choose a station' : 'Waiting for stations'}</option>{stations.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}</select><ChevronDown size={14} /></div><div className="pollutant-tabs" aria-label="Pollutant selection">{POLLUTANTS.map(p => <button key={p.id} className={pollutant === p.id ? 'active' : ''} onClick={() => setPollutant(p.id)} aria-pressed={pollutant === p.id} title={p.name}>{p.label}</button>)}</div><div className="mode-control"><select value={mode} onChange={e => setMode(e.target.value)} aria-label="Observation mode"><option value="live">Current feed</option><option value="archive">Research archive</option></select></div><span className="refresh-label"><RefreshCw size={12} className={refreshing ? 'spin' : ''} />{refreshing ? 'Refreshing' : receivedAt ? `Checked ${ageLabel(receivedAt).toLowerCase()}` : 'Auto-refresh 60s'}</span></div>;
+}
+function DataNotice() {
+  const { error, data, mode, loading, refresh } = useMonitoring();
+  if (error) return <div className="notice danger" role="alert"><CircleHelp size={17} /><span>{error}{data ? ' Showing the last response; freshness may have changed.' : ''}</span><button onClick={refresh}>Retry</button></div>;
+  if (mode === 'archive') return <div className="notice amber"><Clock3 size={17} /><span>Historical research archive. These readings do not describe current air quality and cannot trigger a live alert.</span></div>;
+  if (data && data.status !== 'live') return <div className="notice amber"><Radio size={17} /><span>{data.message || 'Current measurements are incomplete or unavailable. Data gaps remain visible.'}</span></div>;
+  if (loading) return <div className="notice"><RefreshCw size={16} className="spin" /><span>Connecting to the monitoring feed and checking observation timestamps…</span></div>;
+  return null;
+}
+function Overview() {
+  const { data, stations, measurement, pollutant, selectedStation, mode, error } = useMonitoring();
+  const freshCount = stations.filter(s => freshMeasurement(latestMeasurement(s, pollutant), mode, error)).length;
+  const fresh = freshMeasurement(measurement, mode, error);
+  return <div className="page"><PageHeading eyebrow="AIRSENTINEL / PUBLIC OBSERVATORY" title="A clearer picture of the air." description="Follow the evidence across Delhi NCR. From a station reading to the next informed decision." action={<Link to="/report" className="button secondary"><MapPin size={15} />Contribute a report<ArrowUpRight size={15} /></Link>} /><MonitoringControls /><DataNotice />
+    <div className="overview-top"><section className="reading-card"><div className="reading-top"><span className="eyebrow">SELECTED OBSERVATION</span><span className="metric-icon"><Wind size={20} /></span></div><div className="reading-pollutant">{pollutantLabel(pollutant)}<span>{POLLUTANTS.find(p => p.id === pollutant)?.name}</span></div><div className="reading-number">{valueLabel(measurement?.value)}<span>{measurement?.unit || 'No reading'}</span></div><StatusBadge status={mode === 'archive' ? 'archive' : fresh ? 'live' : measurement ? 'delayed' : 'unavailable'}>{mode === 'archive' ? 'Historical observation' : fresh ? 'Fresh observation' : measurement ? 'Delayed observation' : 'Awaiting observation'}</StatusBadge><div className="reading-bottom"><p><MapPin size={14} />{selectedStation?.name || 'Select a connected station'}</p><p><Clock3 size={14} />{dateLabel(measurement?.observed_at)}</p></div><div className="reading-orbit orbit-one" /><div className="reading-orbit orbit-two" /></section>
+      <section className="panel map-panel"><div className="panel-heading"><div><span className="eyebrow">ON THE GROUND</span><h2>Delhi monitoring network</h2></div><Link to="/sensors" className="text-link">Explore map <ArrowUpRight size={14} /></Link></div><Suspense fallback={<div className="map-loading">Loading the geographic map…</div>}><StationMap /></Suspense></section></div>
+    <div className="metrics-strip"><Metric icon={Radio} label="Stations returned" value={data ? stations.length : '—'} sub={data?.coverage?.complete ? 'Source query complete' : 'Bounded source query'} /><Metric icon={Activity} label={`Fresh ${pollutantLabel(pollutant)} readings`} value={mode === 'archive' || error ? '—' : data ? freshCount : '—'} sub={mode === 'archive' ? 'Historical mode selected' : 'Within the source freshness window'} /><Metric icon={Database} label="History observations" value={data ? data.history?.points?.filter(usableMeasurement).length || 0 : '—'} sub="For this station & pollutant" /><Metric icon={Clock3} label="Forecast availability" value={data?.forecast?.points?.length ? `${data.forecast.points.length} points` : 'Pending'} sub={data?.forecast?.points?.length ? data.forecast.model_label || data.forecast.model || 'Research model output' : 'Fresh history required'} /></div>
+    <div className="overview-bottom"><EvidenceChart /><SourceLedger /></div><StationTable compact /><EvidenceBoundary />
+  </div>;
+}
+function Metric({ icon: Icon, label, value, sub }) { return <div className="metric"><span className="metric-label"><Icon size={14} />{label}</span><strong>{value}</strong><small>{sub}</small></div>; }
+function SourceLedger() {
+  const { selectedStation, measurement, mode, error } = useMonitoring();
+  const source = typeof measurement?.source === 'string' ? measurement.source : typeof selectedStation?.source === 'string' ? selectedStation.source : measurement?.source?.name || selectedStation?.provider || 'Source pending';
+  const quality = measurement?.quality;
+  return <section className="panel source-panel"><div className="panel-heading"><div><span className="eyebrow">BUILT ON TRACEABLE DATA</span><h2>Evidence ledger</h2></div><ShieldCheck size={18} /></div><div className="ledger-row"><span className="ledger-icon"><Database size={17} /></span><div><strong>Source provenance</strong><p>{source}</p></div></div><div className="ledger-row"><span className="ledger-icon"><Clock3 size={17} /></span><div><strong>Observation freshness</strong><p>{measurement ? `${ageLabel(measurement.observed_at)} · ${mode === 'archive' ? 'historical' : freshMeasurement(measurement, mode, error) ? 'fresh' : 'delayed / unconfirmed'}` : 'No observation received'}</p></div></div><div className="ledger-row"><span className="ledger-icon"><MapPin size={17} /></span><div><strong>Location precision</strong><p>{selectedStation?.location_precision === 'station_point' ? 'Fixed station point' : selectedStation?.location_precision === 'mobile_initial_point' ? 'Mobile station · initial location only' : 'Location precision unverified'}</p><small>No neighbourhood coverage radius inferred.</small></div></div><div className="ledger-row"><span className="ledger-icon"><ShieldCheck size={17} /></span><div><strong>Measurement quality</strong><p>{quality?.status?.replaceAll('_', ' ') || 'Not available'}</p>{quality?.reasons?.length ? <small>{quality.reasons.join('; ')}</small> : null}</div></div><div className="ledger-footer"><i className="legend-dot amber" />Source data is provisional. Human review is required for operational decisions.</div></section>;
+}
+function StationTable({ compact = false }) {
+  const { stations, pollutant, selectedStation, setStationId, mode, error } = useMonitoring();
+  const [query, setQuery] = useState('');
+  const filtered = stations.filter(s => s.name.toLowerCase().includes(query.toLowerCase()));
+  const visible = compact ? filtered.slice(0, 5) : filtered;
+  return <section className="panel station-table-panel"><div className="panel-heading"><div><span className="eyebrow">SOURCE-REPORTED LOCATIONS</span><h2>{compact ? 'Station watchlist' : 'Stations in this query'} <span className="heading-count">{stations.length}</span></h2></div>{compact ? <Link to="/sensors" className="text-link">View all stations <ArrowRight size={14} /></Link> : <input className="station-search" aria-label="Search stations" placeholder="Search station name…" value={query} onChange={e => setQuery(e.target.value)} />}</div>{visible.length ? <div className="table-scroll"><table><thead><tr><th>Station</th><th>{pollutantLabel(pollutant)} reading</th><th>Last observation</th><th>Status</th><th><span className="sr-only">Selection</span></th></tr></thead><tbody>{visible.map(station => {
+    const m = latestMeasurement(station, pollutant);
+    const active = String(station.id) === String(selectedStation?.id);
+    const fresh = freshMeasurement(m, mode, error);
+    return <tr key={station.id} className={active ? 'selected-row' : ''}><td><span className="table-station"><i className={`legend-dot ${fresh ? 'green' : 'muted'}`} /><span>{station.name}<small>{station.provider || 'Source provider unlisted'}</small></span></span></td><td><span className="table-value">{valueLabel(m?.value)}</span><small className="inline-unit"> {m?.unit || '—'}</small></td><td className="muted-text">{m ? dateLabel(m.observed_at) : station.latest_status === 'not_requested' ? 'Not queried' : 'No accepted observation'}</td><td><StatusBadge status={mode === 'archive' ? 'archive' : fresh ? 'live' : m ? 'delayed' : 'unavailable'}>{mode === 'archive' ? 'Archive' : fresh ? 'Fresh' : m ? 'Delayed' : station.latest_status === 'not_requested' ? 'Not queried' : station.measurements?.some(row => row.pollutant === pollutant && row.quality?.status === 'rejected') ? 'Rejected' : 'Unavailable'}</StatusBadge></td><td><button className="icon-button" onClick={() => setStationId(station.id)} aria-label={`Select ${station.name}`} aria-pressed={active}>{active ? <Check size={17} /> : <ArrowUpRight size={17} />}</button></td></tr>;
+  })}</tbody></table></div> : <EmptyState icon={Radio} title={query ? 'No matching stations' : 'No station records yet'}>{query ? 'Try a different station name.' : 'Station locations and measurements will appear when the source returns data.'}</EmptyState>}</section>;
+}
+function EvidenceBoundary() { const { data } = useMonitoring(); return <div className="evidence-boundary"><ShieldCheck size={18} /><div><strong>A measured view, with honest boundaries.</strong><p>Station measurements describe a location and time. Citizen reports support review. Forecasts are research outputs; AirSentinel does not publish official AQI or determine pollution sources.</p>{data?.limitations?.length ? <details><summary>View source limitations</summary><ul>{data.limitations.map((item, index) => <li key={index}>{typeof item === 'string' ? item : item.message || JSON.stringify(item)}</li>)}</ul></details> : null}</div></div>; }
+function LiveMonitoring() {
+  const { data, selectedStation, measurement, pollutant } = useMonitoring();
+  const exportData = () => { const blob = new Blob([JSON.stringify({ exported_at: new Date().toISOString(), selected_station: selectedStation, pollutant, history: data?.history, forecast: data?.forecast, limitations: data?.limitations }, null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const anchor = document.createElement('a'); anchor.href = url; anchor.download = `airsentinel-observations-${pollutant}.json`; anchor.click(); URL.revokeObjectURL(url); };
+  return <div className="page"><PageHeading eyebrow="MONITORING / OBSERVATIONS & MODELS" title="Follow the signal." description="Inspect one pollutant at a time, with measured history and a clearly labelled research forecast." action={<button className="button secondary" disabled={!data} onClick={exportData}><ArrowDownToLine size={16} />Export observations</button>} /><MonitoringControls /><DataNotice /><div className="live-summary"><div><span className="eyebrow">{selectedStation?.name || 'STATION PENDING'}</span><h2>{pollutantLabel(pollutant)} <strong>{valueLabel(measurement?.value)}</strong> <span>{measurement?.unit}</span></h2></div><div><span className="eyebrow">OBSERVATION TIME</span><p>{dateLabel(measurement?.observed_at)}</p></div><div><span className="eyebrow">FORECAST METHOD</span><p>{data?.forecast?.model_label || data?.forecast?.model || 'Awaiting model output'}<small>Validation and sufficient fresh history required</small></p></div></div><EvidenceChart expanded /><div className="two-columns"><SourceLedger /><section className="panel"><div className="panel-heading"><div><span className="eyebrow">WHAT THE FORECAST MEANS</span><h2>A forecast, with boundaries</h2></div><Activity size={19} /></div><div className="prose-panel"><p>The service evaluates research models against held-out observations. Each returned forecast identifies its model, horizon and available evaluation results.</p><p>Forecasts appear only when the service returns eligible points. Any uncertainty band comes from the model output.</p><p>Missing data is left missing. A forecast is not a confirmed event or a statement of source causation.</p><Link to="/brics" className="text-link">Inspect model exchange <ArrowRight size={14} /></Link></div></section></div><EvidenceBoundary /></div>;
+}
+function Sensors() { const { data } = useMonitoring(); return <div className="page"><PageHeading eyebrow="SENSOR NETWORK / DELHI NCR" title="The geography of evidence." description="Explore real monitoring locations. Zoom in for a pitched view of mapped buildings and select any station." /><MonitoringControls /><DataNotice /><section className="panel map-panel"><Suspense fallback={<div className="map-loading">Loading geographic map…</div>}><StationMap full /></Suspense><div className="map-caption"><span><MapPin size={14} />Points are station locations; map buildings are geographic context.</span><span>{data?.coverage?.complete ? 'Complete source query' : 'Partial / bounded query'} · {data?.coverage?.returned ?? data?.stations?.length ?? '—'} returned</span></div></section><StationTable /><EvidenceBoundary /></div>; }
+function NotFound() { return <div className="page"><EmptyState title="This view is not available">Return to the public observatory to explore the monitoring network.</EmptyState><Link to="/" className="button primary">Back to overview <ArrowRight size={16} /></Link></div>; }

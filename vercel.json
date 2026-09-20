@@ -1,0 +1,16 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "experimentalServices": {
+    "web": {
+      "entrypoint": "dashboard",
+      "routePrefix": "/"
+    },
+    "api": {
+      "entrypoint": "api_service.py",
+      "routePrefix": "/api",
+      "maxDuration": 60,
+      "includeFiles": ["src/__init__.py", "src/api/__init__.py", "src/api/auth_v2.py", "src/api/operational.py", "src/services/__init__.py", "src/services/*_v2.py"],
+      "excludeFiles": ["**/__pycache__/**", "**/.env*", "**/tests/**", "dashboard/**", "docs/**", "data/**", "raw/**", "models/**", "**/*.pkl", "**/*.joblib", "**/*.exe", "**/*.sqlite*", "**/*.db", "**/*.zip", ".local/**", ".venv/**", "scripts/**"]
+    }
+  }
+}

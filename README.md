@@ -1,4 +1,35 @@
-# AirSentinel
+# AirSentinel — evidence-aware Delhi pilot (v2)
+
+**Current entrypoint:** React in `dashboard/`, FastAPI in `backend/main.py` and `src/api/operational.py`. The older Streamlit/GCP description below is historical, not a statement of the v2 deployment or connected integrations. The insecure demonstration `/v1` API is retired (HTTP 410).
+
+The rebuild includes real OpenAQ observations, pollutant history, chronological ridge-versus-persistence forecast comparison, a pitched geographic map, separate citizen reporting and an authority-authenticated review workflow. It does not invent neighbourhood AQI, sensor coverage or confirmed pollution sources.
+
+## Run the current application
+
+Use Python 3.11+ and Node.js 22.12+ or a supported newer release:
+
+```powershell
+py -3.11 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -e ./backend
+npm.cmd --prefix dashboard ci --ignore-scripts
+.\.venv\Scripts\python.exe scripts/dev_v2.py --env-file PRIVATE_ENV_PATH --check
+.\.venv\Scripts\python.exe scripts/dev_v2.py --env-file PRIVATE_ENV_PATH --initialize-store
+.\.venv\Scripts\python.exe scripts/dev_v2.py --env-file PRIVATE_ENV_PATH
+```
+
+Open `http://localhost:3000`. Ctrl+C stops both services. The helper explicitly selects local SQLite; `--store postgres` requires `DATABASE_URL`. It never silently substitutes local storage in production.
+
+Private configuration needs `CLERK_SECRET_KEY`, `VITE_CLERK_PUBLISHABLE_KEY` (or `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`) and `AUTHORITY_ALLOWED_EMAILS`. Add `OPENAQ_API_KEY` for current API access. Only the Clerk **publishable** key belongs in a `VITE_` browser variable. Keep all secrets in ignored private files, never source control.
+
+```powershell
+.\.venv\Scripts\python.exe -m unittest discover -s tests -p 'test_*v2.py' -v
+npm.cmd --prefix dashboard run build
+npm.cmd --prefix dashboard audit
+```
+
+See [the current rebuild/runbook](docs/REBUILD_STATUS.md), [evidence engine](docs/EVIDENCE_ENGINE.md), [security](docs/SECURITY_V2.md) and [registered-device integration](docs/DEVICE_INGESTION.md). The old public deployments were paused at the user's request. A successful local build does not mean a new cloud release is live.
+
+## Historical project description (pre-v2; reference only)
 
 AirSentinel is an India-first, locality-aware clean-air and climate-resilience decision-support prototype for **BRICS Track 2 — Clean Air & Climate Resilience** and the **Sustainability** theme.
 
