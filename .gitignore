@@ -21,3 +21,5 @@ build/
 skills-lock.json
 
 .env*
+
+.vercel
