@@ -1,8 +1,8 @@
-# AirSentinel — evidence-aware Delhi pilot (v2)
+# VayuNirikshak — evidence-aware India air-quality network (v2.1)
 
 **Current entrypoint:** React in `dashboard/`, FastAPI in `backend/main.py` and `src/api/operational.py`. The older Streamlit/GCP description below is historical, not a statement of the v2 deployment or connected integrations. The insecure demonstration `/v1` API is retired (HTTP 410).
 
-The rebuild includes real OpenAQ observations, pollutant history, chronological ridge-versus-persistence forecast comparison, a pitched geographic map, separate citizen reporting and an authority-authenticated review workflow. It does not invent neighbourhood AQI, sensor coverage or confirmed pollution sources.
+The rebuild includes India-wide OpenAQ station discovery, pollutant history, chronological ridge-versus-persistence forecast comparison, a pitched geographic map, separate citizen reporting and an authority-authenticated review workflow. It does not invent neighbourhood AQI, sensor coverage or confirmed pollution sources.
 
 ## Run the current application
 
@@ -27,11 +27,11 @@ npm.cmd --prefix dashboard run build
 npm.cmd --prefix dashboard audit
 ```
 
-See [the current rebuild/runbook](docs/REBUILD_STATUS.md), [evidence engine](docs/EVIDENCE_ENGINE.md), [security](docs/SECURITY_V2.md) and [registered-device integration](docs/DEVICE_INGESTION.md). The old public deployments were paused at the user's request. A successful local build does not mean a new cloud release is live.
+See [the current rebuild/runbook](docs/REBUILD_STATUS.md), [evidence engine](docs/EVIDENCE_ENGINE.md), [security](docs/SECURITY_V2.md) and [registered-device integration](docs/DEVICE_INGESTION.md). A successful local build does not by itself mean a cloud release is live.
 
 ## Historical project description (pre-v2; reference only)
 
-AirSentinel is an India-first, locality-aware clean-air and climate-resilience decision-support prototype for **BRICS Track 2 — Clean Air & Climate Resilience** and the **Sustainability** theme.
+VayuNirikshak (formerly AirSentinel) is an India-first, locality-aware clean-air and climate-resilience decision-support prototype for **BRICS Track 2 — Clean Air & Climate Resilience** and the **Sustainability** theme.
 
 It joins outdoor monitoring, weather, contextual satellite layers, privacy-minimised citizen evidence, short-horizon forecasts and anomaly review. The goal is to help a human authority reviewer identify **where evidence needs attention and what to verify next**—without inventing locality AQI, blaming a source, or automating enforcement.
 

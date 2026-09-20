@@ -181,7 +181,7 @@ export default function AuthorityDashboard() {
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-[#f0f6ff] uppercase tracking-wider">
-                AirSentinel Authority Command
+                VayuNirikshak Authority Command
               </span>
               <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-pulse" />
               <span className="text-[11px] text-[#22c55e] font-medium">Encrypted Live Session</span>
@@ -218,7 +218,7 @@ export default function AuthorityDashboard() {
 
       <header>
         <h1 className="text-2xl font-bold text-[#f0f6ff] mb-1">Central Authority Air Triage</h1>
-        <p className="text-[#7aa2cc] text-sm">Delhi NCR Regional Air Quality Enforcement & AI Root-Cause Attribution</p>
+        <p className="text-[#7aa2cc] text-sm">India-wide evidence triage and human-reviewed pollution investigation</p>
       </header>
 
       {/* Smooth Marquee Alert Banner */}
@@ -230,7 +230,7 @@ export default function AuthorityDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <MetricCard title="Active Enforcement Cases" value={cases.filter(c => c.status !== 'resolved').length} trend={12} icon={Briefcase} color="amber" />
         <MetricCard title="Predicted Spikes (Next 4h)" value={3} trend={-2} icon={AlertOctagon} color="red" />
-        <MetricCard title="Physical Sensor Radius" value="1.5 km" subtitle="True dispersion limit enforced" icon={Target} color="green" />
+        <MetricCard title="Physical Sensor Radius" value="Not assumed" subtitle="Each device keeps its verified metadata" icon={Target} color="green" />
         <MetricCard title="Intervention Lead Time" value="2.5h" subtitle="Faster than 24h rolling AQI" icon={Clock} color="teal" />
       </div>
 
@@ -364,7 +364,7 @@ export default function AuthorityDashboard() {
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[400px]">
         <div className="DashCard p-4 flex flex-col h-full">
-          <LivePollutantChart data={liveData} title="Network-wide Telemetry (Delhi Pilot)" />
+          <LivePollutantChart data={liveData} title="Network-wide Telemetry (India)" />
         </div>
         <div className="DashCard p-4 flex flex-col h-full">
           <ForecastChart forecasts={MOCK_FORECAST} />

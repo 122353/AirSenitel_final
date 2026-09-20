@@ -1,7 +1,7 @@
-"""Bounded OpenAQ evidence service. No synthetic measurements or spatial radius.
+"""India-wide OpenAQ evidence service. No synthetic measurements or spatial radius.
 
-The discovery box includes Delhi/NCR and is not an administrative boundary or
-an inventory of every physical monitor. OpenAQ observations remain third-party
+The discovery box covers India's operating bounds and is not an administrative
+boundary or an inventory of every physical monitor. OpenAQ observations remain third-party
 aggregated, provisional evidence; this module neither certifies AQI nor infers
 pollution causes. Credentials are used only on api.openaq.org requests.
 """
@@ -27,13 +27,15 @@ import httpx
 from .forecast_v2 import accepted_series, build_forecast, iso, parse_time
 
 UTC = timezone.utc
-DELHI_BBOX = (76.8, 28.3, 77.6, 29.0)
+INDIA_BBOX = (68.0, 6.0, 98.5, 38.5)
+# Compatibility alias for older imports. It now represents the national query.
+DELHI_BBOX = INDIA_BBOX
 API_BASE = "https://api.openaq.org/v3"
 ARCHIVE_BASE = "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz"
 WEATHER_URL = "https://api.open-meteo.com/v1/forecast"
 POLLUTANTS = {"pm25", "pm10", "no2", "so2", "o3", "co", "no", "nox", "bc"}
-MAX_LOCATION_PAGES = 4
-PAGE_SIZE = 500
+MAX_LOCATION_PAGES = 2
+PAGE_SIZE = 1000
 MAX_HISTORY_PAGES = 2
 HISTORY_HOURS = 168
 MAX_PEERS = 2
@@ -155,7 +157,7 @@ def station_from_location(raw: dict, *, source: str = "openaq_v3") -> dict | Non
     lat, lon = _number(coordinates.get("latitude")), _number(coordinates.get("longitude"))
     station_id = _positive_id(raw.get("id"))
     if (station_id is None or lat is None or lon is None
-            or not DELHI_BBOX[0] <= lon <= DELHI_BBOX[2] or not DELHI_BBOX[1] <= lat <= DELHI_BBOX[3]):
+            or not INDIA_BBOX[0] <= lon <= INDIA_BBOX[2] or not INDIA_BBOX[1] <= lat <= INDIA_BBOX[3]):
         return None
     sensors = []
     for sensor in raw.get("sensors") or []:
@@ -258,7 +260,7 @@ def _forget_task(mapping: dict, key, task: asyncio.Task) -> None:
 
 
 async def _discover_locations(fetcher: _Fetcher) -> tuple[list[dict], dict]:
-    params = {"bbox": ",".join(map(str, DELHI_BBOX)), "iso": "IN", "order_by": "id", "sort_order": "asc"}
+    params = {"bbox": ",".join(map(str, INDIA_BBOX)), "iso": "IN", "order_by": "id", "sort_order": "asc"}
     if not fetcher.shared_discovery:
         return await fetcher.pages("/locations", params, MAX_LOCATION_PAGES)
     key = hashlib.sha256((fetcher.api_key or "").encode()).hexdigest()
@@ -291,7 +293,7 @@ async def _discover_locations(fetcher: _Fetcher) -> tuple[list[dict], dict]:
 
 
 async def _weather(fetcher: _Fetcher, station: dict | None) -> dict:
-    lat, lon = (station["latitude"], station["longitude"]) if station else (28.6139, 77.2090)
+    lat, lon = (station["latitude"], station["longitude"]) if station else (22.5937, 78.9629)
     base = {"source": "Open-Meteo", "source_url": "https://open-meteo.com/en/docs",
             "kind": "weather_model_estimate", "latitude": lat, "longitude": lon,
             "message": "Gridded model weather context, not a local weather-station measurement or pollutant reading."}
@@ -485,13 +487,13 @@ def _base_snapshot(now: datetime, pollutant: str, mode: str) -> dict:
         "forecast": build_forecast([], now=now), "candidates": [],
         "candidate_status": {"status": "insufficient_evidence", "message": "Fresh quality-checked measurements and independent corroboration are required."},
         "weather": {"status": "unavailable", "kind": "weather_model_estimate"},
-        "coverage": {"bbox": list(DELHI_BBOX), "scope": "OpenAQ locations within a Delhi/NCR discovery bounding box",
+        "coverage": {"bbox": list(INDIA_BBOX), "scope": "OpenAQ locations within the India operating bounds",
                      "complete": False, "returned": 0, "total_reported": None, "pages_fetched": 0,
                      "all_physical_sensors": False, "administrative_boundary": False,
                      "representativeness_radius_km": None},
         "sources": [], "limitations": ["OpenAQ is a third-party aggregator; these values are not certified official AQI.",
             "Station points have no assumed 5 km or other sensing radius. Search distance is not spatial representativeness.",
-            "Discovery completeness covers the API query only, not every monitor in Delhi or physical hardware.",
+            "Discovery completeness covers the configured national data feed only, not every physical monitor in India.",
             "Predictions and candidates support human investigation; neither identifies a pollution source nor authorizes enforcement."]}
 
 
@@ -505,7 +507,7 @@ async def _build(fetcher: _Fetcher, station_id: int | None, pollutant: str, mode
         selected = next((s for s in stations if s["id"] == station_id), None) if station_id else next(iter(stations), None)
         snapshot["stations"] = stations
         snapshot["coverage"].update(returned=len(stations), complete=False,
-            scope="Two known archive locations (17, 235), not Delhi-wide live discovery", incomplete_reason="live_api_key_unavailable" if not fetcher.api_key else "archive_subset")
+            scope="Two known archive locations (17, 235), not India-wide live discovery", incomplete_reason="live_api_key_unavailable" if not fetcher.api_key else "archive_subset")
         snapshot["sources"].append({"id": "openaq_archive", "status": "delayed" if stations else "unavailable",
             "label": "OpenAQ public archive — 72+ hours delayed", "url": "https://docs.openaq.org/aws/about",
             "minimum_publication_delay_hours": 72, "live": False})
@@ -552,9 +554,9 @@ async def _build(fetcher: _Fetcher, station_id: int | None, pollutant: str, mode
         snapshot["coverage"]["latest_stations_requested"] = len(results)
         snapshot["coverage"]["latest_stations_total"] = len(stations)
     elif station_id:
-        snapshot["message"] = "Requested station was not found within the returned Delhi/NCR discovery results."
+        snapshot["message"] = "Requested station was not found within the returned India-wide discovery results."
     else:
-        snapshot["message"] = "OpenAQ station discovery is unavailable or returned no Delhi/NCR locations."
+        snapshot["message"] = "OpenAQ station discovery is unavailable or returned no Indian locations."
     snapshot["stations"] = list(stations_by_id.values())
     snapshot["weather"] = await _weather(fetcher, selected)
     snapshot["sources"].append({"id": "openaq_v3", "status": snapshot["status"], "label": "OpenAQ v3 station observations",

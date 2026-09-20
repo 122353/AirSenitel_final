@@ -26,7 +26,7 @@ export default function Sidebar({ theme, toggleTheme }) {
               <div className="absolute top-0 right-0 w-2 h-2 bg-[#22c55e] rounded-full animate-pulse-ring" />
             </div>
             <span className="text-xl font-bold text-white">
-              AirSentinel
+              VayuNirikshak
             </span>
           </div>
         )}

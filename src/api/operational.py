@@ -22,7 +22,7 @@ from src.services.india_intelligence_v2 import assess_location, india_overview, 
 MAX_BODY = 1_500_000
 MAX_PHOTO = 1_000_000
 Image.MAX_IMAGE_PIXELS = 16_000_000
-app = FastAPI(title='AirSentinel evidence API', version='2.0.0', docs_url=None, redoc_url=None, openapi_url=None)
+app = FastAPI(title='VayuNirikshak evidence API', version='2.1.0', docs_url=None, redoc_url=None, openapi_url=None)
 app.add_middleware(CORSMiddleware, allow_origins=configured_origins(), allow_methods=['GET', 'POST'], allow_headers=['Authorization', 'Content-Type'], allow_credentials=False)
 
 
@@ -51,7 +51,7 @@ async def store_error(request: Request, exc):
 
 @app.get('/health')
 def health():
-    return {'status': 'ok', 'version': '2.0.0', 'time': datetime.now(timezone.utc).isoformat(),
+    return {'status': 'ok', 'version': '2.1.0', 'name': 'VayuNirikshak', 'time': datetime.now(timezone.utc).isoformat(),
             'capabilities': {'ground_api_configured': bool(os.getenv('OPENAQ_API_KEY')),
                              'authority_auth_configured': bool(os.getenv('CLERK_SECRET_KEY')),
                              'store': store.store_health()}, 'external_notifications': 'not_connected'}

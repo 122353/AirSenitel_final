@@ -26,7 +26,7 @@ export default function StationMap({ full = false }) {
     try {
       map = new maplibregl.Map({
         container: container.current, style: 'https://tiles.openfreemap.org/styles/dark',
-        center: [77.18, 28.64], zoom: 9.5, pitch: 40, bearing: -12,
+        center: [78.9629, 22.5937], zoom: 3.4, pitch: 35, bearing: -8,
         attributionControl: true, cooperativeGestures: true,
       });
       mapRef.current = map;
@@ -84,10 +84,10 @@ export default function StationMap({ full = false }) {
   }, [satellite, imageryDate, styleReady]);
   const togglePitch = () => { const next = !pitched; setPitched(next); mapRef.current?.easeTo({ pitch: next ? 50 : 0, bearing: next ? -12 : 0, duration: matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 800 }); };
   return <div className={`station-map ${full ? 'map-full' : ''}`}>
-    <div className="map-canvas" ref={container} role="region" aria-label="Interactive map of Delhi monitoring station locations" />
-    <div className="map-coordinate"><span className="status-dot" /> DELHI NCR <span>28.64° N · 77.18° E</span></div>
+    <div className="map-canvas" ref={container} role="region" aria-label="Interactive map of monitoring station locations across India" />
+    <div className="map-coordinate"><span className="status-dot" /> INDIA NETWORK <span>6–38.5° N · 68–98.5° E</span></div>
     {full ? <div className="satellite-controls"><div><Satellite size={14} /><span>NASA SATELLITE CONTEXT</span></div><label><span className="sr-only">Satellite layer</span><select value={satellite} onChange={e => setSatellite(e.target.value)}><option value="off">Overlay off</option><option value="truecolor">MODIS Terra · true color</option><option value="aerosol">MODIS Terra · aerosol optical depth</option></select></label>{satellite !== 'off' ? <><label><span>Observation date (UTC)</span><input aria-label="Satellite observation date" type="date" min="2000-02-24" max={new Date().toISOString().slice(0, 10)} value={imageryDate} onChange={e => setImageryDate(e.target.value)} /></label><p>{satellite === 'aerosol' ? 'Column aerosol context (~3 km product). Not street-level PM₂.₅ or source proof.' : 'Dated satellite imagery. Clouds and observation gaps can obscure the surface.'}</p><a href="https://worldview.earthdata.nasa.gov/" target="_blank" rel="noreferrer">Source: NASA GIBS / Worldview ↗</a></> : null}{imageryError ? <p className="satellite-error" role="alert">{imageryError}</p> : null}</div> : null}
-    <div className="map-tools"><button onClick={togglePitch} className={pitched ? 'active' : ''} title="Toggle pitched map" aria-label="Toggle pitched map" aria-pressed={pitched}><Layers3 size={16} /></button><button onClick={() => mapRef.current?.zoomIn()} aria-label="Zoom in"><Plus size={16} /></button><button onClick={() => mapRef.current?.zoomOut()} aria-label="Zoom out"><Minus size={16} /></button><button onClick={() => mapRef.current?.easeTo({ center: [77.18, 28.64], zoom: 9.5, duration: 0 })} aria-label="Reset map to Delhi"><RotateCcw size={15} /></button></div>
+    <div className="map-tools"><button onClick={togglePitch} className={pitched ? 'active' : ''} title="Toggle pitched map" aria-label="Toggle pitched map" aria-pressed={pitched}><Layers3 size={16} /></button><button onClick={() => mapRef.current?.zoomIn()} aria-label="Zoom in"><Plus size={16} /></button><button onClick={() => mapRef.current?.zoomOut()} aria-label="Zoom out"><Minus size={16} /></button><button onClick={() => mapRef.current?.easeTo({ center: [78.9629, 22.5937], zoom: 3.4, duration: 0 })} aria-label="Reset map to India"><RotateCcw size={15} /></button></div>
     {mapError ? <div className="map-fallback"><MapPin size={26} /><p>{mapError}</p></div> : null}
     <div className="map-legend"><span><i className="legend-dot green" />Fresh station reading</span><span><i className="legend-dot muted" />Delayed / not yet queried</span></div>
     {!stations.length && !mapError ? <div className="map-empty">Station locations appear when the data service responds.</div> : null}

@@ -127,7 +127,7 @@ export default function CitizenReport() {
         </div>
         <h1 className="text-3xl font-bold text-[#f0f6ff] mb-2">Report Hyperlocal Pollution</h1>
         <p className="text-[#7aa2cc] text-sm max-w-xl mx-auto">
-          Your ground observation is cryptographically anonymized and directly ingested into the AirSentinel AI model for authority dispatch.
+          Your ground observation is cryptographically anonymized and ingested into the VayuNirikshak review workflow for authorized assessment.
         </p>
       </header>
 
@@ -250,7 +250,7 @@ export default function CitizenReport() {
               disabled={isSubmitting || !formData.consent}
               className="w-full py-3 bg-[#0ea5e9] text-[#060d1a] hover:opacity-90 font-bold rounded-lg transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-50"
             >
-              <Send className="w-4 h-4" /> Transmit Report to AirSentinel Network
+              <Send className="w-4 h-4" /> Transmit Report to VayuNirikshak
             </button>
           </form>
         </div>
@@ -277,7 +277,7 @@ export default function CitizenReport() {
             </span>
             <h2 className="text-2xl font-bold text-[#f0f6ff] mt-3 mb-2">Report Successfully Ingested</h2>
             <p className="text-[#7aa2cc] text-sm max-w-lg mx-auto mb-6">
-              Your ground evidence for <strong className="text-[#0ea5e9]">{submittedReport.location}</strong> has been stored in the AirSentinel audit datastore and queued for statutory authority verification.
+              Your ground evidence for <strong className="text-[#0ea5e9]">{submittedReport.location}</strong> has been stored in the VayuNirikshak audit datastore and queued for authorized human verification.
             </p>
 
             <div className="max-w-md mx-auto p-4 rounded-xl bg-[#080f1e] border border-[#1a3055] text-left text-xs space-y-2 mb-6">

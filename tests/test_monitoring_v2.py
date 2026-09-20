@@ -126,7 +126,9 @@ class QualityTests(unittest.TestCase):
         self.assertIsNone(station["search_distance_km"])
         self.assertEqual(station["location_precision"], "station_point")
         raw = location()
-        raw["coordinates"]["latitude"] = 19.07
+        raw["coordinates"].update({"latitude": 19.07, "longitude": 72.88})
+        self.assertIsNotNone(station_from_location(raw))
+        raw["coordinates"].update({"latitude": 0.0, "longitude": 72.88})
         self.assertIsNone(station_from_location(raw))
 
     def test_mobile_and_unknown_station_coordinates_are_not_labelled_fixed(self):
@@ -446,7 +448,7 @@ class NetworkTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(request.headers["X-API-Key"], "test-only-key")
             path = request.url.path
             if path == "/v3/locations":
-                self.assertEqual(request.url.params["bbox"], "76.8,28.3,77.6,29.0")
+                self.assertEqual(request.url.params["bbox"], "68.0,6.0,98.5,38.5")
                 self.assertNotIn("radius", request.url.params)
                 return httpx.Response(200, json={"meta": {"found": 1}, "results": [location()]})
             if path == "/v3/locations/17/latest":

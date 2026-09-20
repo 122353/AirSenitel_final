@@ -32,9 +32,9 @@ const CORRIDORS = [
 
 const BRICS_SYSTEMS = [
   {
-    country: 'India (AirSentinel Platform)',
+    country: 'India (VayuNirikshak Platform)',
     flag: '🇮🇳',
-    platform: 'AirSentinel Hyperlocal AI Platform',
+    platform: 'VayuNirikshak Hyperlocal AI Platform',
     approach: 'Physical Sensor Decay (1.5km Cutoff) + Stoichiometric Cause Attribution',
     leadTime: '2.5 Hours Ahead of 24h Rolling Mean',
     innovation: 'Decoupled sensor proxy matching; targeted statutory agency routing'
@@ -226,7 +226,7 @@ export default function NationalOverview() {
                 <h3 className="text-lg font-bold text-white flex items-center gap-2">
                   <Zap className="w-5 h-5 text-amber-400" /> Empirical Performance vs. Government CPCB System
                 </h3>
-                <p className="text-xs text-slate-400">Comparing AirSentinel short-horizon residual detection against standard Indian regulatory mechanisms</p>
+                <p className="text-xs text-slate-400">Comparing VayuNirikshak short-horizon residual detection against standard Indian regulatory mechanisms</p>
               </div>
               <span className="px-3 py-1 rounded-full bg-green-500/10 border border-green-500/30 text-green-300 font-bold text-xs">
                 +2.5h Earlier Intervention
@@ -247,7 +247,7 @@ export default function NationalOverview() {
               </div>
 
               <div className="p-4 rounded-xl bg-gradient-to-b from-cyan-950/40 to-slate-900/80 border border-cyan-500/40 space-y-2">
-                <span className="font-bold text-cyan-300 block uppercase">AirSentinel Climate Action (Ours)</span>
+                <span className="font-bold text-cyan-300 block uppercase">VayuNirikshak Climate Action (Ours)</span>
                 <p className="text-slate-300">Direct 1h/3h/4h quantile residual tracking with physical dispersion cutoff (1.5km limit). Detects anomalous spikes in <strong className="text-cyan-400">15 to 30 minutes</strong> and routes directly to the statutory agency.</p>
                 <div className="pt-2 text-[11px] text-green-400 border-t border-cyan-500/20 flex items-center gap-1 font-bold">
                   <CheckCircle2 className="w-3.5 h-3.5" /> 2.5 Hours Lead Time Advantage
@@ -299,7 +299,7 @@ export default function NationalOverview() {
                 <Database className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-white">AirSentinel Data Architecture & Database Engine</h3>
+                <h3 className="text-lg font-bold text-white">VayuNirikshak Data Architecture & Database Engine</h3>
                 <p className="text-xs text-slate-400">Verifiable two-tier architecture tailored for statutory compliance and multi-year forecasting</p>
               </div>
             </div>

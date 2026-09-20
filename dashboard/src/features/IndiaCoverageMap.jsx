@@ -69,7 +69,7 @@ export default function IndiaCoverageMap({ cities = [], selected, pollutant, onS
   };
 
   return <div className="station-map india-map">
-    <div className="map-canvas" ref={container} role="region" aria-label="Interactive map of the AirSentinel India model watchlist" />
+    <div className="map-canvas" ref={container} role="region" aria-label="Interactive map of the VayuNirikshak India model watchlist" />
     <div className="map-coordinate"><span className="status-dot" /> INDIA <span>National screening · select a city</span></div>
     <div className="map-tools"><button onClick={togglePitch} className={pitched ? 'active' : ''} aria-label="Toggle pitched map"><Layers3 size={16} /></button><button onClick={() => mapRef.current?.zoomIn()} aria-label="Zoom in"><Plus size={16} /></button><button onClick={() => mapRef.current?.zoomOut()} aria-label="Zoom out"><Minus size={16} /></button><button onClick={() => mapRef.current?.easeTo({ center: [79.2, 22.8], zoom: 3.4, pitch: 28, bearing: -5, duration: 0 })} aria-label="Reset map to India"><RotateCcw size={15} /></button></div>
     <div className="map-legend"><span><i className="legend-dot green" />Model estimate</span><span><i className="legend-dot amber" />Forecast rise to verify</span><span><i className="india-selected-dot" />Selected place</span></div>

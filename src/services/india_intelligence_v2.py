@@ -5,7 +5,7 @@ measurement.  It provides three deliberately separate evidence tiers:
 
 * OpenAQ station observations, when keyed access and a nearby fixed monitor exist.
 * CAMS global model estimates for any coordinate in India (about 45 km grid).
-* A pointer to AirSentinel's private local-device workflow for micro-area evidence.
+* A pointer to VayuNirikshak's private local-device workflow for micro-area evidence.
 
 Outputs support research screening and human investigation.  They are not CPCB AQI,
 regulatory measurements, source attribution, or automatic enforcement decisions.
@@ -90,7 +90,7 @@ def _inside_india(latitude: float, longitude: float) -> bool:
 def validate_coordinates(latitude: Any, longitude: Any) -> tuple[float, float]:
     latitude, longitude = _number(latitude), _number(longitude)
     if latitude is None or longitude is None or not _inside_india(latitude, longitude):
-        raise ValueError("Coordinates must fall within the AirSentinel India operating bounds")
+        raise ValueError("Coordinates must fall within the VayuNirikshak India operating bounds")
     return latitude, longitude
 
 
