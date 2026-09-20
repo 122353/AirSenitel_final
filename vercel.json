@@ -1,16 +1,25 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "experimentalServices": {
+  "services": {
     "web": {
-      "entrypoint": "dashboard",
-      "routePrefix": "/"
+      "root": "dashboard/",
+      "framework": "vite"
     },
     "api": {
-      "entrypoint": "api_service.py",
-      "routePrefix": "/api",
-      "maxDuration": 60,
-      "includeFiles": ["src/__init__.py", "src/api/__init__.py", "src/api/auth_v2.py", "src/api/operational.py", "src/services/__init__.py", "src/services/*_v2.py"],
-      "excludeFiles": ["**/__pycache__/**", "**/.env*", "**/tests/**", "dashboard/**", "docs/**", "data/**", "raw/**", "models/**", "**/*.pkl", "**/*.joblib", "**/*.exe", "**/*.sqlite*", "**/*.db", "**/*.zip", ".local/**", ".venv/**", "scripts/**"]
+      "root": ".",
+      "framework": "fastapi",
+      "entrypoint": "api_service:app",
+      "functions": {
+        "api_service.py": {
+          "maxDuration": 60,
+          "includeFiles": "src/**",
+          "excludeFiles": "{**/__pycache__/**,**/.env*,**/tests/**,dashboard/**,docs/**,data/**,raw/**,models/**,**/*.pkl,**/*.joblib,**/*.exe,**/*.sqlite*,**/*.db,**/*.zip,.local/**,.venv/**,scripts/**}"
+        }
+      }
     }
-  }
+  },
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": { "service": "api" } },
+    { "source": "/(.*)", "destination": { "service": "web" } }
+  ]
 }

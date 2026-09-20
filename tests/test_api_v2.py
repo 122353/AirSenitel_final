@@ -111,6 +111,12 @@ class ApiTests(unittest.TestCase):
             self.assertEqual(response.status_code, 429)
             self.assertEqual(response.headers['retry-after'], '15')
 
+    def test_vercel_service_mount_preserves_public_api_prefix(self):
+        service = importlib.import_module('api_service')
+        with TestClient(service.app) as client:
+            self.assertEqual(client.get('/api/health').status_code, 200)
+            self.assertEqual(client.get('/health').status_code, 404)
+
 
 if __name__ == '__main__':
     unittest.main()

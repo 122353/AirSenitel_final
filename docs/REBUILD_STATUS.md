@@ -4,7 +4,7 @@
 
 The rebuild starts from GitHub commit `03b2f22bd7b34bec248673b5dd2f2ddcd748ffe3` on a separate `codex/authority-live-evidence` branch. The September 18 complete ZIP remains unchanged. No old Git history is rewritten.
 
-The earlier dashboard displayed generated values and its API exposed review actions without server-side authorization. Local development uses `backend/main.py`; the root Vercel service uses `api_service.py`, keeping shared `src` modules inside its build workspace. Both load `src/api/operational.py`. The compatibility module `src/api/main.py` also delegates to that protected API. Root `pyproject.toml` defines the lightweight v2 dependencies; `requirements.txt` remains the independent legacy research dependency set.
+The earlier dashboard displayed generated values and its API exposed review actions without server-side authorization. Local development uses `backend/main.py`; the root Vercel service uses `api_service.py`, mounting the evidence API at `/api` because current Vercel Services preserve the original public path. Both load `src/api/operational.py`. The compatibility module `src/api/main.py` also delegates to that protected API. Root `pyproject.toml` defines the lightweight v2 dependencies; `requirements.txt` remains the independent legacy research dependency set.
 
 ## Data and detection
 
