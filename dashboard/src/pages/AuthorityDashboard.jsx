@@ -4,11 +4,10 @@ import AlertBanner from '../components/ui/AlertBanner';
 import LivePollutantChart from '../components/charts/LivePollutantChart';
 import ForecastChart from '../components/charts/ForecastChart';
 import AnomalyTimeline from '../components/charts/AnomalyTimeline';
-import GlassCard from '../components/ui/GlassCard';
 import AuthorityLoginModal from '../components/auth/AuthorityLoginModal';
 import CaseDispatchModal from '../components/cases/CaseDispatchModal';
 import { useLiveData } from '../hooks/useLiveData';
-import { Briefcase, AlertOctagon, Target, Clock, ShieldCheck, UserCheck, LogOut, ChevronRight, CheckCircle, MessageSquare, Send, Building } from 'lucide-react';
+import { Briefcase, AlertOctagon, Target, Clock, ShieldCheck, UserCheck, LogOut, ChevronRight, Building } from 'lucide-react';
 
 const MOCK_ALERTS = [
   { id: 1, severity: 'critical', area: 'Anand Vihar', message: 'PM2.5 spike exceeded 380 µg/m³. DPCC mist cannons deployed.', timestamp: Date.now() },
@@ -81,8 +80,8 @@ export default function AuthorityDashboard() {
   const [isDispatchModalOpen, setIsDispatchModalOpen] = useState(false);
   const [cases, setCases] = useState(INITIAL_CASES);
   const [citizenReports, setCitizenReports] = useState([]);
+  const [activeTab, setActiveTab] = useState('system'); // 'system' or 'citizen'
 
-  // Check stored login session on mount
   useEffect(() => {
     const stored = sessionStorage.getItem('airsentinel_auth_user');
     if (stored) {
@@ -90,7 +89,6 @@ export default function AuthorityDashboard() {
         setCurrentUser(JSON.parse(stored));
       } catch (e) {}
     } else {
-      // Default to DPCC demo officer for immediate usability
       const defaultOfficer = {
         officer_id: 'DPCC-ENV-409',
         name: 'DPCC Enforcement Officer',
@@ -102,7 +100,6 @@ export default function AuthorityDashboard() {
       sessionStorage.setItem('airsentinel_auth_user', JSON.stringify(defaultOfficer));
     }
 
-    // Load cases from backend if available
     fetch('/api/v1/cases')
       .then(res => res.json())
       .then(data => {
@@ -122,20 +119,19 @@ export default function AuthorityDashboard() {
       })
       .catch(() => {});
 
-    // Load recent citizen reports
     fetch('/api/v1/reports')
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data) && data.length > 0) {
-          setCitizenReports(data.slice(0, 4));
+          setCitizenReports(data);
         } else {
           const cached = JSON.parse(localStorage.getItem('airsentinel_citizen_reports') || '[]');
-          setCitizenReports(cached.slice(0, 4));
+          setCitizenReports(cached);
         }
       })
       .catch(() => {
         const cached = JSON.parse(localStorage.getItem('airsentinel_citizen_reports') || '[]');
-        setCitizenReports(cached.slice(0, 4));
+        setCitizenReports(cached);
       });
   }, []);
 
@@ -144,8 +140,28 @@ export default function AuthorityDashboard() {
     setIsDispatchModalOpen(true);
   };
 
+  const handleCitizenReportClick = (rep) => {
+    const mapped = {
+      id: rep.report_id,
+      area: rep.location || rep.locality_id,
+      category: 'Citizen Report',
+      type: 'citizen_report',
+      observation: rep.observation || rep.report_text,
+      time: rep.timestamp_utc ? new Date(rep.timestamp_utc).toLocaleTimeString() : new Date().toLocaleTimeString(),
+      observed_pm25: 180
+    };
+    setSelectedCase(mapped);
+    setIsDispatchModalOpen(true);
+  };
+
   const handleDispatchSuccess = (updatedCase) => {
-    setCases(prev => prev.map(item => item.id === updatedCase.id ? updatedCase : item));
+    if (updatedCase.type === 'citizen_report') {
+      // In a real app we'd update the report status
+      setIsDispatchModalOpen(false);
+    } else {
+      setCases(prev => prev.map(item => item.id === updatedCase.id ? updatedCase : item));
+      setIsDispatchModalOpen(false);
+    }
   };
 
   const handleLogout = () => {
@@ -155,22 +171,22 @@ export default function AuthorityDashboard() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Top Officer Authentication Badge Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-slate-900/70 border border-white/10 backdrop-blur-md">
+    <div className="space-y-6 pb-12">
+      {/* Top Header Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-4 p-4 bg-[#0c1729] border-b border-[#1a3055] -mx-6 -mt-6 px-6 mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-600 to-blue-600 flex items-center justify-center shadow-md shadow-cyan-500/20">
-            <ShieldCheck className="w-5 h-5 text-white" />
+          <div className="w-9 h-9 rounded bg-[#0ea5e9]/10 flex items-center justify-center">
+            <ShieldCheck className="w-5 h-5 text-[#0ea5e9]" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-white uppercase tracking-wider">
+              <span className="text-xs font-bold text-[#f0f6ff] uppercase tracking-wider">
                 AirSentinel Authority Command
               </span>
-              <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-              <span className="text-[11px] text-green-400 font-medium">Encrypted Live Session</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-pulse" />
+              <span className="text-[11px] text-[#22c55e] font-medium">Encrypted Live Session</span>
             </div>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-[#7aa2cc]">
               {currentUser ? `${currentUser.agency} • ${currentUser.name} (${currentUser.officer_id})` : 'Guest Mode (Read-only)'}
             </p>
           </div>
@@ -179,12 +195,12 @@ export default function AuthorityDashboard() {
         <div className="flex items-center gap-3">
           {currentUser ? (
             <div className="flex items-center gap-2">
-              <span className="hidden sm:inline-block text-xs px-2.5 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 font-mono">
+              <span className="hidden sm:inline-block text-xs px-2.5 py-1 rounded bg-[#0ea5e9]/10 text-[#0ea5e9] font-mono border border-[#0ea5e9]/30">
                 {currentUser.badge}
               </span>
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-red-400 px-3 py-1.5 rounded-lg border border-white/10 hover:border-red-500/30 transition-all"
+                className="flex items-center gap-1.5 text-xs text-[#7aa2cc] hover:text-[#ef4444] px-3 py-1.5 rounded-lg border border-[#1a3055] hover:border-[#ef4444]/30 transition-all"
               >
                 <LogOut className="w-3.5 h-3.5" /> Switch Role
               </button>
@@ -192,7 +208,7 @@ export default function AuthorityDashboard() {
           ) : (
             <button
               onClick={() => setIsLoginModalOpen(true)}
-              className="flex items-center gap-2 text-xs font-bold text-white bg-gradient-to-r from-cyan-600 to-blue-600 px-4 py-2 rounded-lg shadow-md shadow-cyan-500/20 transition-all"
+              className="flex items-center gap-2 text-xs font-bold bg-[#0ea5e9] text-[#060d1a] px-4 py-2 rounded-lg transition-all hover:opacity-90"
             >
               <UserCheck className="w-3.5 h-3.5" /> Officer Login
             </button>
@@ -201,142 +217,171 @@ export default function AuthorityDashboard() {
       </div>
 
       <header>
-        <h1 className="text-3xl font-bold text-white mb-1">Central Authority Air Triage</h1>
-        <p className="text-slate-400 text-sm">Delhi NCR Regional Air Quality Enforcement & AI Root-Cause Attribution</p>
+        <h1 className="text-2xl font-bold text-[#f0f6ff] mb-1">Central Authority Air Triage</h1>
+        <p className="text-[#7aa2cc] text-sm">Delhi NCR Regional Air Quality Enforcement & AI Root-Cause Attribution</p>
       </header>
 
       {/* Smooth Marquee Alert Banner */}
-      <div className="-mx-6 mb-6">
-        <AlertBanner alerts={MOCK_ALERTS} onSelectAlert={() => setIsDispatchModalOpen(true)} />
+      <div className="mb-6 overflow-hidden">
+        <AlertBanner alerts={MOCK_ALERTS} onSelectAlert={() => {}} />
       </div>
 
-      {/* Metrics Row */}
+      {/* KPI Metric Cards Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <MetricCard title="Active Enforcement Cases" value={cases.filter(c => c.status !== 'resolved').length} trend={12} icon={Briefcase} color="amber" />
         <MetricCard title="Predicted Spikes (Next 4h)" value={3} trend={-2} icon={AlertOctagon} color="red" />
         <MetricCard title="Physical Sensor Radius" value="1.5 km" subtitle="True dispersion limit enforced" icon={Target} color="green" />
-        <MetricCard title="Intervention Lead Time" value="2.5h" subtitle="Faster than 24h rolling AQI" icon={Clock} color="cyan" />
+        <MetricCard title="Intervention Lead Time" value="2.5h" subtitle="Faster than 24h rolling AQI" icon={Clock} color="teal" />
       </div>
 
-      {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[400px]">
-        <LivePollutantChart data={liveData} title="Network-wide Telemetry (Delhi Pilot)" />
-        <ForecastChart forecasts={MOCK_FORECAST} />
-      </div>
+      {/* Main Tabbed Area */}
+      <div className="bg-[#0c1729] border border-[#1a3055] rounded-xl overflow-hidden">
+        <div className="flex border-b border-[#1a3055]">
+          <button 
+            className={`flex-1 py-4 text-sm font-bold transition-colors ${activeTab === 'system' ? 'text-[#0ea5e9] border-b-2 border-[#0ea5e9]' : 'text-[#7aa2cc] hover:text-[#f0f6ff]'}`}
+            onClick={() => setActiveTab('system')}
+          >
+            System Detected Cases
+          </button>
+          <button 
+            className={`flex-1 py-4 text-sm font-bold transition-colors ${activeTab === 'citizen' ? 'text-[#0ea5e9] border-b-2 border-[#0ea5e9]' : 'text-[#7aa2cc] hover:text-[#f0f6ff]'}`}
+            onClick={() => setActiveTab('citizen')}
+          >
+            Citizen Reports
+          </button>
+        </div>
 
-      {/* Bottom Row: Live Case Queue & Anomaly Timeline */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        <div className="xl:col-span-2 space-y-6">
-          <GlassCard className="p-6">
-            <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
-              <div>
-                <h3 className="font-bold text-lg text-white flex items-center gap-2">
-                  <Building className="w-5 h-5 text-cyan-400" /> Active Government Case Queue
-                </h3>
-                <p className="text-xs text-slate-400">Click any row to view AI root cause diagnosis and assign government authorities</p>
-              </div>
-              <span className="text-xs px-2.5 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 font-mono">
-                {cases.length} Tracked Hotspots
-              </span>
-            </div>
-
+        <div className="p-0">
+          {activeTab === 'system' && (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="border-b border-white/10 text-slate-400 uppercase tracking-wider">
-                    <th className="pb-3 font-semibold">Case ID</th>
-                    <th className="pb-3 font-semibold">Hotspot Area</th>
-                    <th className="pb-3 font-semibold">Probable Category</th>
-                    <th className="pb-3 font-semibold">Assigned Authority</th>
-                    <th className="pb-3 font-semibold">Status</th>
-                    <th className="pb-3 font-semibold text-right">Action</th>
+                  <tr className="border-b border-[#1a3055] text-[#7aa2cc] uppercase tracking-wider bg-[#080f1e]">
+                    <th className="px-4 py-3 font-semibold">Case ID</th>
+                    <th className="px-4 py-3 font-semibold">Location</th>
+                    <th className="px-4 py-3 font-semibold">AI Category</th>
+                    <th className="px-4 py-3 font-semibold">PM2.5</th>
+                    <th className="px-4 py-3 font-semibold">Assigned Authority</th>
+                    <th className="px-4 py-3 font-semibold">Status</th>
+                    <th className="px-4 py-3 font-semibold text-right">Action</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5">
+                <tbody className="divide-y divide-[#1a3055]">
                   {cases.map(c => (
                     <tr 
                       key={c.id} 
-                      onClick={() => handleCaseClick(c)}
-                      className="hover:bg-white/5 transition-colors group cursor-pointer"
+                      className="border-b border-[#1a3055] hover:bg-[#0ea5e9]/5 transition-colors group"
                     >
-                      <td className="py-3.5 font-mono text-cyan-400 font-bold">{c.id}</td>
-                      <td className="py-3.5 font-semibold text-white">{c.area}</td>
-                      <td className="py-3.5 text-slate-300">{c.category}</td>
-                      <td className="py-3.5">
+                      <td className="px-4 py-3.5 font-mono text-[#0ea5e9] font-bold">{c.id}</td>
+                      <td className="px-4 py-3.5 font-semibold text-[#f0f6ff]">{c.area}</td>
+                      <td className="px-4 py-3.5 text-[#7aa2cc]">{c.category}</td>
+                      <td className="px-4 py-3.5 text-[#ef4444] font-mono">{c.observed_pm25} µg/m³</td>
+                      <td className="px-4 py-3.5">
                         <span className={`px-2 py-0.5 rounded text-[11px] font-medium border ${
                           c.assigned_authority === 'Unassigned' 
-                            ? 'border-red-500/40 bg-red-500/10 text-red-400' 
-                            : 'border-cyan-500/40 bg-cyan-500/10 text-cyan-300'
+                            ? 'border-[#ef4444]/40 bg-[#ef4444]/10 text-[#ef4444]' 
+                            : 'border-[#0ea5e9]/40 bg-[#0ea5e9]/10 text-[#0ea5e9]'
                         }`}>
                           {c.assigned_authority}
                         </span>
                       </td>
-                      <td className="py-3.5">
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase ${
-                          c.status === 'open' ? 'bg-red-500/20 text-red-400' :
-                          c.status === 'in-progress' ? 'bg-amber-500/20 text-amber-400' :
-                          c.status === 'dispatched' ? 'bg-blue-500/20 text-blue-400' :
-                          'bg-green-500/20 text-green-400'
+                      <td className="px-4 py-3.5">
+                        <span className={`status-badge ${
+                          c.status === 'open' ? 'status-badge-red' :
+                          c.status === 'in-progress' ? 'status-badge-amber' :
+                          c.status === 'dispatched' ? 'status-badge-blue' :
+                          'status-badge-green'
                         }`}>
                           {c.status}
                         </span>
                       </td>
-                      <td className="py-3.5 text-right">
-                        <button className="text-xs px-2.5 py-1 rounded bg-white/10 group-hover:bg-cyan-500 group-hover:text-slate-950 transition-all font-semibold inline-flex items-center gap-1">
-                          Assign <ChevronRight className="w-3.5 h-3.5" />
+                      <td className="px-4 py-3.5 text-right">
+                        <button 
+                          onClick={() => handleCaseClick(c)}
+                          className="bg-[#0ea5e9]/10 border border-[#0ea5e9]/30 text-[#0ea5e9] hover:bg-[#0ea5e9] hover:text-[#060d1a] text-xs px-3 py-1.5 rounded-lg transition-all font-medium inline-flex items-center gap-1"
+                        >
+                          Assign Authority <ChevronRight className="w-3.5 h-3.5" />
                         </button>
                       </td>
                     </tr>
                   ))}
+                  {cases.length === 0 && (
+                    <tr>
+                      <td colSpan="7" className="px-4 py-8 text-center text-[#7aa2cc]">No system detected cases.</td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
-          </GlassCard>
-
-          {/* Incoming Citizen Telemetry Corroboration Feed */}
-          {citizenReports.length > 0 && (
-            <GlassCard className="p-6">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <MessageSquare className="w-4 h-4 text-cyan-400" />
-                  <h4 className="text-sm font-bold text-white">Live Citizen Ground Corroboration Feed</h4>
-                </div>
-                <span className="text-xs text-slate-400">{citizenReports.length} incoming observations</span>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                {citizenReports.map((rep, i) => (
-                  <div key={rep.report_id || i} className="p-3 rounded-xl bg-slate-900/60 border border-white/5 space-y-1">
-                    <div className="flex items-center justify-between">
-                      <span className="font-semibold text-cyan-300">{rep.location || rep.locality_id}</span>
-                      <span className="text-[10px] text-slate-500 font-mono">
-                        {new Date(rep.timestamp_utc).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </span>
-                    </div>
-                    <p className="text-slate-300 text-[11px] line-clamp-2">{rep.observation || rep.report_text}</p>
-                    <div className="pt-1 flex items-center gap-2 text-[10px] text-amber-400 font-medium">
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" /> Awaiting Authority Verification
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </GlassCard>
           )}
-        </div>
 
-        {/* Anomaly Timeline Column */}
-        <div className="xl:col-span-1">
-          <AnomalyTimeline anomalies={MOCK_ANOMALIES} />
+          {activeTab === 'citizen' && (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-[#1a3055] text-[#7aa2cc] uppercase tracking-wider bg-[#080f1e]">
+                    <th className="px-4 py-3 font-semibold">Report ID</th>
+                    <th className="px-4 py-3 font-semibold">Location</th>
+                    <th className="px-4 py-3 font-semibold">Category</th>
+                    <th className="px-4 py-3 font-semibold">Observation</th>
+                    <th className="px-4 py-3 font-semibold">Time</th>
+                    <th className="px-4 py-3 font-semibold text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#1a3055]">
+                  {citizenReports.map((rep, idx) => (
+                    <tr 
+                      key={rep.report_id || idx} 
+                      className="border-b border-[#1a3055] hover:bg-[#0ea5e9]/5 transition-colors group"
+                    >
+                      <td className="px-4 py-3.5 font-mono text-[#0ea5e9] font-bold">{rep.report_id || `REP-${1000+idx}`}</td>
+                      <td className="px-4 py-3.5 font-semibold text-[#f0f6ff]">{rep.location || rep.locality_id}</td>
+                      <td className="px-4 py-3.5 text-[#7aa2cc]">Citizen Report</td>
+                      <td className="px-4 py-3.5 text-[#7aa2cc] max-w-xs truncate">{rep.observation || rep.report_text}</td>
+                      <td className="px-4 py-3.5 text-[#7aa2cc]">{rep.timestamp_utc ? new Date(rep.timestamp_utc).toLocaleTimeString() : new Date().toLocaleTimeString()}</td>
+                      <td className="px-4 py-3.5 text-right">
+                        <button 
+                          onClick={() => handleCitizenReportClick(rep)}
+                          className="bg-[#0ea5e9]/10 border border-[#0ea5e9]/30 text-[#0ea5e9] hover:bg-[#0ea5e9] hover:text-[#060d1a] text-xs px-3 py-1.5 rounded-lg transition-all font-medium inline-flex items-center gap-1"
+                        >
+                          Review & Assign <ChevronRight className="w-3.5 h-3.5" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  {citizenReports.length === 0 && (
+                    <tr>
+                      <td colSpan="6" className="px-4 py-8 text-center text-[#7aa2cc]">No recent citizen reports.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Authority Login Modal */}
+      {/* Charts Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[400px]">
+        <div className="DashCard p-4 flex flex-col h-full">
+          <LivePollutantChart data={liveData} title="Network-wide Telemetry (Delhi Pilot)" />
+        </div>
+        <div className="DashCard p-4 flex flex-col h-full">
+          <ForecastChart forecasts={MOCK_FORECAST} />
+        </div>
+      </div>
+
+      {/* Bottom: AnomalyTimeline */}
+      <div className="mt-6">
+        <AnomalyTimeline anomalies={MOCK_ANOMALIES} />
+      </div>
+
       <AuthorityLoginModal
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
         onLoginSuccess={(officer) => setCurrentUser(officer)}
       />
 
-      {/* Case Government Assignment Dispatch Modal */}
       <CaseDispatchModal
         isOpen={isDispatchModalOpen}
         caseData={selectedCase}

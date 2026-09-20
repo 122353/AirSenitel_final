@@ -1,11 +1,8 @@
 import React from 'react';
 
-export default function GlassCard({ children, className = '', hover = false, glow = '' }) {
-  const hoverClass = hover ? 'hover:scale-[1.02] hover:-translate-y-1 transition-all duration-300' : '';
-  const glowClass = glow ? `glow-${glow}` : '';
-  
+export default function GlassCard({ children, className = '' }) {
   return (
-    <div className={`glass-card rounded-2xl ${hoverClass} ${glowClass} ${className}`}>
+    <div className={`bg-[#0c1729] border border-[#1a3055] rounded-xl ${className}`}>
       {children}
     </div>
   );

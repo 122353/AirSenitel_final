@@ -1,30 +1,65 @@
 @import 'tailwindcss';
 
+:root {
+  --bg-base: #060d1a;
+  --bg-card: #0c1729;
+  --border: #1a3055;
+  --accent: #0ea5e9;
+  --text-primary: #f0f6ff;
+  --text-secondary: #7aa2cc;
+}
+
+body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+}
+
 @layer utilities {
+  .DashCard {
+    background-color: #0c1729;
+    border: 1px solid #1a3055;
+    border-radius: 0.75rem;
+  }
+  
   .glass-card {
-    @apply backdrop-blur-xl bg-white/5 border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.1)];
+    /* Kept for backwards compatibility — flat solid card */
+    background-color: #0c1729;
+    border: 1px solid #1a3055;
+    border-radius: 0.75rem;
   }
-  
+
   .glass-card-light {
-    @apply backdrop-blur-xl bg-white/70 border border-slate-200 shadow-[0_4px_30px_rgba(0,0,0,0.05)];
-  }
-
-  .glow-red {
-    @apply shadow-[0_0_15px_rgba(239,68,68,0.5)] border-red-500/50;
+    background-color: #0c1729;
+    border: 1px solid #1a3055;
+    border-radius: 0.75rem;
   }
   
-  .glow-amber {
-    @apply shadow-[0_0_15px_rgba(245,158,11,0.5)] border-amber-500/50;
+  .status-badge {
+    @apply px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase;
   }
-  
-  .glow-green {
-    @apply shadow-[0_0_15px_rgba(34,197,94,0.5)] border-green-500/50;
+  .status-badge-red {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.2);
   }
-
-  .text-glow {
-    text-shadow: 0 0 10px rgba(255,255,255,0.5);
+  .status-badge-amber {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.2);
+  }
+  .status-badge-green {
+    background-color: rgba(34, 197, 94, 0.1);
+    color: #22c55e;
+    border: 1px solid rgba(34, 197, 94, 0.2);
+  }
+  .status-badge-blue {
+    background-color: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+    border: 1px solid rgba(59, 130, 246, 0.2);
   }
 }
+
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
@@ -37,11 +72,11 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-slate-700/50 rounded-full;
+  @apply bg-[#1a3055] rounded-full;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-slate-600;
+  @apply bg-[#7aa2cc];
 }
 
 /* Animations */
@@ -71,16 +106,4 @@
 
 .animate-marquee {
   animation: marquee 30s linear infinite;
-}
-
-.bg-animated-gradient {
-  background: linear-gradient(-45deg, #0f172a, #1e293b, #020617, #0f172a);
-  background-size: 400% 400%;
-  animation: gradient-bg 15s ease infinite;
-}
-
-@keyframes gradient-bg {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
 }
