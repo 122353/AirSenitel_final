@@ -3,7 +3,9 @@ import { SignInButton, UserButton, useAuth } from '@clerk/react';
 import { LockKeyhole, LogIn, RefreshCw, ShieldCheck } from 'lucide-react';
 import { api } from './data';
 
-export const authConfigured = Boolean(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY?.startsWith('pk_'));
+const clerkPublishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+  || import.meta.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+export const authConfigured = Boolean(clerkPublishableKey?.startsWith('pk_'));
 export function AccessGate({ authority = false, children }) {
   if (!authConfigured) return <div className="panel auth-card"><span className="auth-mark"><LockKeyhole size={28} /></span><span className="eyebrow">{authority ? 'PRIVATE OPERATOR WORKSPACE' : 'CONSENT-BASED COMMUNITY REPORTING'}</span><h2>{authority ? 'Operator access is not configured yet.' : 'Reporting sign-in is not configured yet.'}</h2><p>{authority ? 'An approved operator account and a verified session are required to access private evidence and case review.' : 'A verified account is required to submit a report. Public observations remain available without signing in.'}</p><div className="notice amber"><ShieldCheck size={17} /><span>Sign-in setup is pending. No private records can be accessed or submitted from this view.</span></div></div>;
   return <VerifiedAccess authority={authority}>{children}</VerifiedAccess>;
