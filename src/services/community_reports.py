@@ -18,7 +18,7 @@ def save_local_report(report: CommunityReportInput) -> dict:
     _ensure_dir()
     
     record = {
-        "report_id": str(uuid.uuid4()),
+        "report_id": f"REP-2026-{uuid.uuid4().hex[:6].upper()}",
         "timestamp_utc": datetime.utcnow().isoformat() + "Z",
         "locality_id": report.locality_id,
         "report_text": report.report_text,
@@ -32,3 +32,17 @@ def save_local_report(report: CommunityReportInput) -> dict:
         f.write(json.dumps(record) + '\n')
         
     return record
+
+def list_local_reports(limit: int = 50) -> list[dict]:
+    if not os.path.exists(REPORTS_FILE):
+        return []
+    reports = []
+    with open(REPORTS_FILE, 'r') as f:
+        for line in f:
+            line = line.strip()
+            if line:
+                try:
+                    reports.append(json.loads(line))
+                except Exception:
+                    continue
+    return reports[-limit:][::-1]

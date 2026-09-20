@@ -82,3 +82,23 @@ class SensorEffectiveRange(BaseModel):
     instrument_class: str
     effective_radius_m: float
     confidence_decay_start_m: float
+
+class CaseDispatchInput(BaseModel):
+    assigned_authority: str
+    assigned_unit: Optional[str] = None
+    priority: str = "High"
+    action_type: str
+    officer_notes: Optional[str] = None
+    outcome_status: str = "dispatched"
+
+class CitizenReportCreateInput(BaseModel):
+    location: str
+    observation: Optional[str] = None
+    description: Optional[str] = None
+    category: Optional[str] = None
+    severity: Optional[str] = None
+    reporter_phone: Optional[str] = None
+    language: str = "en"
+    source_type: str = "text"
+    consent: bool = True
+    coarse_grid: Optional[str] = None

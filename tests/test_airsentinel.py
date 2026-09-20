@@ -14,6 +14,17 @@ from src.services.community_reports import save_local_report
 from src.services.gemini_explainer import explain_case
 from src.services.gemini_photo import analyse_photo
 from src.services.brics_federation import registry as brics_registry, BRICSModelMetadata
+from src.services.root_cause_ai import diagnose_spike_cause
+from src.services.benchmark_evaluator import get_government_benchmark_metrics, get_brics_interoperability_comparison
+from src.services.community_reports import list_local_reports
+from src.api.schemas import CaseDispatchInput, CitizenReportCreateInput
+from src.api.main import (
+    dispatch_case_authority,
+    create_citizen_report,
+    get_citizen_reports,
+    run_spike_diagnosis,
+    get_system_benchmarks
+)
 
 class TestAirSentinel(unittest.TestCase):
     def test_api_health(self):
@@ -117,6 +128,76 @@ class TestAirSentinel(unittest.TestCase):
             "objective" in explanation.lower() or 
             "evidence" in explanation.lower()
         )
+
+    def test_root_cause_diagnostic_combustion(self):
+        # High PM2.5 to PM10 ratio -> combustion
+        diagnosis = diagnose_spike_cause({
+            "pm25": 180.0,
+            "pm10": 210.0,
+            "no2": 45.0,
+            "so2": 12.0,
+            "co": 2.2
+        }, weather_data={"wind_speed": 1.2, "wind_deg": 310, "pbl_height": 280})
+        self.assertIn("primary_cause", diagnosis)
+        self.assertIn("confidence_pct", diagnosis)
+        self.assertIn("assigned_authority", diagnosis)
+        self.assertIn("stoichiometric_ratios", diagnosis)
+        self.assertGreaterEqual(diagnosis["confidence_pct"], 50)
+        self.assertIn("Biomass", diagnosis["primary_cause"])
+
+    def test_root_cause_diagnostic_dust(self):
+        # Low PM2.5 to PM10 ratio -> mechanical dust
+        diagnosis = diagnose_spike_cause({
+            "pm25": 60.0,
+            "pm10": 240.0,
+            "no2": 30.0,
+            "so2": 8.0,
+            "co": 0.8
+        }, weather_data={"wind_speed": 4.5, "wind_deg": 270, "pbl_height": 900})
+        self.assertIn("MCD", diagnosis["assigned_authority"])
+        self.assertIn("Construction", diagnosis["primary_cause"])
+
+    def test_benchmark_metrics(self):
+        metrics = get_government_benchmark_metrics()
+        self.assertIn("systems_compared", metrics)
+        self.assertEqual(len(metrics["systems_compared"]), 3)
+        self.assertIn("early_warning_lead_time", metrics["key_improvement_summary"])
+
+        brics = get_brics_interoperability_comparison()
+        self.assertIsInstance(brics, list)
+        self.assertGreaterEqual(len(brics), 5)
+        country_names = [b["country"] for b in brics]
+        self.assertTrue(any("India" in c for c in country_names))
+        self.assertTrue(any("China" in c for c in country_names))
+
+    def test_citizen_report_submission_api(self):
+        payload = CitizenReportCreateInput(
+            location="Anand Vihar ISBT",
+            category="dust",
+            severity="high",
+            description="Massive road dust near construction site",
+            reporter_phone="9876543210"
+        )
+        resp = create_citizen_report(payload)
+        self.assertEqual(resp["status"], "success")
+        self.assertTrue(resp["report_id"].startswith("REP-2026-"))
+
+        reports = get_citizen_reports(limit=10)
+        self.assertIsInstance(reports, list)
+        self.assertTrue(any(r.get("report_id") == resp["report_id"] for r in reports))
+
+    def test_authority_dispatch_api(self):
+        dispatch_in = CaseDispatchInput(
+            assigned_authority="DPCC",
+            officer_name="Insp. Verma",
+            action_type="immediate_inspection",
+            priority="emergency",
+            dispatch_note="Dispatching team for industrial stack check"
+        )
+        res = dispatch_case_authority("CASE-TEST-DISPATCH", dispatch_in)
+        self.assertEqual(res["status"], "dispatched")
+        self.assertEqual(res["assigned_authority"], "DPCC")
+        self.assertEqual(res["case_id"], "CASE-TEST-DISPATCH")
 
 if __name__ == "__main__":
     unittest.main()

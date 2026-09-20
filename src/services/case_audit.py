@@ -46,10 +46,12 @@ def read_case_actions(case_id: str) -> list[dict]:
 
 def save_case_action(case_id: str, action: CaseActionInput) -> dict:
     _ensure_dir()
+    ts = datetime.utcnow().isoformat() + "Z"
     record = {
         "action_id": str(uuid.uuid4()),
         "case_id": case_id,
-        "timestamp": datetime.utcnow().isoformat() + "Z",
+        "timestamp": ts,
+        "timestamp_utc": ts,
         "actor_role": action.actor_role,
         "action_type": action.action_type,
         "outcome_status": action.outcome_status,
