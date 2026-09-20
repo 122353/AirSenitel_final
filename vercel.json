@@ -20,6 +20,6 @@
   },
   "rewrites": [
     { "source": "/api/(.*)", "destination": { "service": "api" } },
-    { "source": "/(.*)", "destination": { "service": "web" } }
+    { "source": "/(.*)", "destination": { "service": "web", "path": "/index.html" } }
   ]
 }
