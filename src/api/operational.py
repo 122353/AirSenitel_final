@@ -18,11 +18,15 @@ from src.services import federation_v2 as federation
 from src.services import devices_v2 as devices
 from src.services.monitoring_v2 import build_snapshot
 from src.services.india_intelligence_v2 import assess_location, india_overview, search_india_places
+from src.services.early_warning_v2 import build_early_warning
+from src.services.official_sources_v2 import get_source_context
+from src.services.station_warning_v2 import screen_station
+import asyncio
 
 MAX_BODY = 1_500_000
 MAX_PHOTO = 1_000_000
 Image.MAX_IMAGE_PIXELS = 16_000_000
-app = FastAPI(title='VayuNirikshak evidence API', version='2.1.0', docs_url=None, redoc_url=None, openapi_url=None)
+app = FastAPI(title='VayuNirikshak evidence API', version='2.2.0', docs_url=None, redoc_url=None, openapi_url=None)
 app.add_middleware(CORSMiddleware, allow_origins=configured_origins(), allow_methods=['GET', 'POST'], allow_headers=['Authorization', 'Content-Type'], allow_credentials=False)
 
 
@@ -51,8 +55,11 @@ async def store_error(request: Request, exc):
 
 @app.get('/health')
 def health():
-    return {'status': 'ok', 'version': '2.1.0', 'name': 'VayuNirikshak', 'time': datetime.now(timezone.utc).isoformat(),
+    return {'status': 'ok', 'version': '2.2.0', 'name': 'VayuNirikshak', 'time': datetime.now(timezone.utc).isoformat(),
             'capabilities': {'ground_api_configured': bool(os.getenv('OPENAQ_API_KEY')),
+                             'regional_early_warning': True,
+                             'cpcb_key_present': bool(os.getenv('CPCB_DATA_GOV_API_KEY')),
+                             'nasa_firms_key_present': bool(os.getenv('NASA_FIRMS_MAP_KEY') or os.getenv('FIRMS_MAP_KEY')),
                              'authority_auth_configured': bool(os.getenv('CLERK_SECRET_KEY')),
                              'store': store.store_health()}, 'external_notifications': 'not_connected'}
 
@@ -67,7 +74,47 @@ async def monitoring(station_id: int | None = Query(None, gt=0), pollutant: str 
     result = await build_snapshot(station_id=station_id, pollutant=pollutant, mode=mode)
     if result.get('status') == 'overloaded':
         return JSONResponse(result, status_code=429, headers={'Retry-After': '15'})
+    result['station_warning'] = screen_station(result)
     return result
+
+
+async def _warning_response(latitude, longitude, label):
+    if (latitude is None) != (longitude is None):
+        raise HTTPException(422, 'Latitude and longitude must be supplied together.')
+    warning, context = await asyncio.gather(
+        build_early_warning(latitude=latitude, longitude=longitude, label=label),
+        get_source_context(latitude=latitude, longitude=longitude),
+        return_exceptions=True,
+    )
+    if isinstance(warning, Exception):
+        # Do not expose upstream exception URLs, credentials or arbitrary text.
+        warning = {'status': 'unavailable', 'generated_at': datetime.now(timezone.utc).isoformat(),
+                   'locations': [], 'alerts': [], 'summary': {},
+                   'message': 'Regional warning sources could not be assessed. No all-clear is implied.'}
+    warning['official_context'] = context if not isinstance(context, Exception) else {
+        'status': 'unavailable', 'sources': [], 'message': 'Official contextual sources could not be assessed.'}
+    warning['operating_mode'] = 'on_request_cached_screening'
+    warning['external_notifications'] = 'not_connected'
+    return warning
+
+
+@app.get('/v2/early-warning')
+async def early_warning(
+    latitude: float | None = Query(None, ge=6.0, le=38.5),
+    longitude: float | None = Query(None, ge=68.0, le=98.5),
+    label: str | None = Query(None, max_length=120),
+):
+    return await _warning_response(latitude, longitude, label)
+
+
+@app.get('/v2/authority/early-warning')
+async def authority_early_warning(
+    latitude: float | None = Query(None, ge=6.0, le=38.5),
+    longitude: float | None = Query(None, ge=68.0, le=98.5),
+    label: str | None = Query(None, max_length=120),
+    actor=Depends(require_authority),
+):
+    return await _warning_response(latitude, longitude, label)
 
 
 @app.get('/v2/india/overview')
