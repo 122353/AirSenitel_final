@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { Link, NavLink, Route, Routes, useLocation } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Activity, ArrowDownToLine, ArrowRight, ArrowUpRight, Check, ChevronDown, CircleHelp, Clock3, Database, Globe2, LayoutDashboard, LockKeyhole, MapPin, Menu, Radio, RefreshCw, ShieldCheck, Wind } from 'lucide-react';
+import { Activity, ArrowDownToLine, ArrowRight, ArrowUpRight, Check, ChevronDown, CircleHelp, Clock3, Database, Globe2, LayoutDashboard, LockKeyhole, MapPin, Menu, Radio, RefreshCw, ShieldCheck, Wind, Zap } from 'lucide-react';
 import { MonitoringProvider, POLLUTANTS, ageLabel, dateLabel, pollutantLabel, useMonitoring, valueLabel, latestMeasurement, freshMeasurement, usableMeasurement } from './features/data';
 import EvidenceChart from './features/Charts';
 import CitizenReport from './features/CitizenReport';
@@ -9,12 +9,14 @@ import ModelExchange from './features/ModelExchange';
 import EarlyWarning from './features/EarlyWarning';
 const StationMap = lazy(() => import('./features/StationMap'));
 const Authority = lazy(() => import('./features/Authority'));
+const SuddenSpikes = lazy(() => import('./features/SuddenSpikes'));
 const NationalIntelligence = () => <div className="page overview-page"><PageHeading eyebrow="INDIA / MULTI-POLLUTANT OUTLOOK" title="India, one location at a time." description="Review the national watchlist or search an Indian locality. Regional forecasts and measured station signals remain distinct." /><EarlyWarning /></div>;
 
 const navigation = [
   { to: '/', label: 'Early warning', icon: LayoutDashboard, exact: true },
   { to: '/national', label: 'India intelligence', icon: Globe2 },
   { to: '/live', label: 'Live monitoring', icon: Activity },
+  { to: '/spikes', label: 'Sudden spikes', icon: Zap },
   { to: '/sensors', label: 'Sensor network', icon: Radio },
   { to: '/report', label: 'Community reports', icon: MapPin },
   { to: '/brics', label: 'Model exchange', icon: Globe2 },
@@ -38,7 +40,7 @@ function AppShell() {
       <div className="sidebar-bottom"><div className="pilot-note"><div className="pilot-note-icon"><ShieldCheck size={19} /></div><h3>Evidence before action.</h3><p>A research pilot for cleaner air. Every reading keeps its source.</p><a href="https://docs.openaq.org/" target="_blank" rel="noreferrer">Explore data standards <ArrowUpRight size={13} /></a></div><Link to="/authority" className="operator-link"><LockKeyhole size={16} /><span>Operator access</span><ArrowUpRight size={14} /></Link><div className="sidebar-version"><span className="status-dot" /> VAYUNIRIKSHAK <span>RESEARCH PILOT</span></div></div>
     </aside>
     <div className="main-shell"><header className="topbar"><div className="breadcrumb"><button className="mobile-menu icon-button" aria-label="Open navigation" onClick={() => setMenuOpen(true)}><Menu size={21} /></button><span>Workspace</span><span className="breadcrumb-slash">/</span><strong>{current?.label || 'Operator access'}</strong></div><div className="topbar-right"><span className={`topbar-status ${freshMeasurement(measurement, mode, error) ? 'live' : ''}`}><i />{mode === 'archive' ? 'Research archive' : error ? 'Feed check failed' : freshMeasurement(measurement, mode, error) ? 'Feed connected' : data?.status === 'delayed' ? 'Delayed observations' : data?.status === 'partial' ? 'Partial coverage' : 'Checking source availability'}</span><button className="icon-button" onClick={refresh} disabled={refreshing} aria-label="Refresh monitoring data" title="Refresh monitoring data"><RefreshCw className={refreshing ? 'spin' : ''} size={17} /></button><span className="region-chip">IN</span></div></header>
-      <main id="main-content"><motion.div key={location.pathname} initial={reducedMotion ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.22 }}><Suspense fallback={<div className="route-loading"><RefreshCw className="spin" size={22} /> Opening workspace…</div>}><Routes><Route path="/" element={<Overview />} /><Route path="/national" element={<NationalIntelligence />} /><Route path="/live" element={<LiveMonitoring />} /><Route path="/sensors" element={<Sensors />} /><Route path="/report" element={<CitizenReport />} /><Route path="/brics" element={<ModelExchange />} /><Route path="/authority/*" element={<Authority />} /><Route path="*" element={<NotFound />} /></Routes></Suspense></motion.div></main>
+      <main id="main-content"><motion.div key={location.pathname} initial={reducedMotion ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.22 }}><Suspense fallback={<div className="route-loading"><RefreshCw className="spin" size={22} /> Opening workspace…</div>}><Routes><Route path="/" element={<Overview />} /><Route path="/national" element={<NationalIntelligence />} /><Route path="/live" element={<LiveMonitoring />} /><Route path="/spikes" element={<SuddenSpikes />} /><Route path="/sensors" element={<Sensors />} /><Route path="/report" element={<CitizenReport />} /><Route path="/brics" element={<ModelExchange />} /><Route path="/authority/*" element={<Authority />} /><Route path="*" element={<NotFound />} /></Routes></Suspense></motion.div></main>
       <footer className="site-footer"><span>VayuNirikshak · Open evidence. Informed decisions.</span><span>Research decision support · Not official AQI</span></footer>
     </div>
   </div>;

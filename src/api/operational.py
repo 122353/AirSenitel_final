@@ -21,6 +21,7 @@ from src.services.india_intelligence_v2 import assess_location, india_overview, 
 from src.services.early_warning_v2 import build_early_warning
 from src.services.official_sources_v2 import get_source_context
 from src.services.station_warning_v2 import screen_station
+from src.services.spikes_v2 import spike_feed, verification_report
 import asyncio
 
 MAX_BODY = 1_500_000
@@ -76,6 +77,41 @@ async def monitoring(station_id: int | None = Query(None, gt=0), pollutant: str 
         return JSONResponse(result, status_code=429, headers={'Retry-After': '15'})
     result['station_warning'] = screen_station(result)
     return result
+
+
+@app.get('/v2/spikes')
+async def sudden_spikes(station_id: int | None = Query(None, gt=0), pollutant: str = Query('pm25', pattern='^(pm25|pm10|no2|so2|o3|co)$')):
+    snapshot = await build_snapshot(station_id=station_id, pollutant=pollutant, mode='live')
+    if snapshot.get('status') == 'overloaded':
+        return JSONResponse(snapshot, status_code=429, headers={'Retry-After': '15'})
+    return spike_feed(snapshot)
+
+
+class SpikeVerification(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+    station_id: int = Field(gt=0, strict=True)
+    pollutant: str = Field(pattern='^(pm25|pm10|no2|so2|o3|co)$')
+    event_id: str = Field(pattern='^spike-[0-9a-f]{64}$')
+    notes: str = Field(default='', max_length=1500)
+    consent: bool = Field(strict=True)
+
+
+@app.post('/v2/spikes/verification', status_code=201)
+async def request_spike_verification(payload: SpikeVerification, actor=Depends(require_user)):
+    if payload.consent is not True:
+        raise HTTPException(422, 'Explicit consent to store and review this request is required.')
+    snapshot = await build_snapshot(station_id=payload.station_id, pollutant=payload.pollutant, mode='live')
+    if snapshot.get('status') == 'overloaded':
+        return JSONResponse({'detail': 'Source collection is busy. Retry after a minute.'}, status_code=429, headers={'Retry-After': '60'})
+    feed = spike_feed(snapshot)
+    event = next((item for item in feed['events'] if item['id'] == payload.event_id), None)
+    if (feed['selected_station_id'] != payload.station_id
+            or feed['selected_pollutant'] != payload.pollutant or event is None):
+        raise HTTPException(409, 'This measured spike is no longer eligible or its evidence changed. Refresh the feed before requesting verification.')
+    result = await run_in_threadpool(store.create_report, verification_report(event, payload.notes), actor)
+    return {'receipt': result['report']['id'] + '.' + result['receipt'], 'status': 'pending_review',
+            'event_id': event['id'], 'external_notifications': 'not_connected',
+            'message': 'Stored privately in the operator review queue. This does not confirm the spike or notify emergency services.'}
 
 
 async def _warning_response(latitude, longitude, label):
